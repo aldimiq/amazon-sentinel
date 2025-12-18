@@ -32,9 +32,9 @@ The infrastructure must be split into two decoupled groups:
 ### FR-002: Networking & Domains
 *   **Docker Desktop:** Access via `localhost:3000` (FE), `localhost:8001` (BE), `localhost:8000` (Supabase).
 *   **OrbStack (Mac):** Support automatic domains via `container.group.orb.local`:
-    *   FE: `http://sentinel-frontend.sentinel-apps.orb.local`
-    *   BE: `http://sentinel-backend.sentinel-apps.orb.local`
-    *   Supabase: `http://supabase-kong.sentinel-auth.orb.local`
+    *   FE: `http://frontend.sentinel-apps.orb.local`
+    *   BE: `http://backend.sentinel-apps.orb.local`
+    *   Supabase: `http://kong.sentinel-auth.orb.local`
 
 
 ## 4. Success Criteria
