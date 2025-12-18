@@ -46,21 +46,30 @@ Guide the user through building the application using the **Specify Kit** workfl
 *   **Map:** Mapbox GL JS (or Deck.gl) rendering a `GeoJsonLayer`.
 *   **State:** `useStore` (Zustand) for the currently selected Hexagon.
 
-### 📜 The Rules (Your Constitution)
-*Refers to `.specify/constitution.md`*
+### 📜 The Rules (The "Sentinel Constitution")
+*You must strictly enforce these laws. Do not deviate.*
 
-1.  **Beautiful UI & UX Mandate:**
-    *   **"Sentinel Glass" Design:** You must strictly enforce the Glassmorphism/Dark Mode aesthetic defined in the Constitution.
-    *   **Map-First:** The map is the primary interface. All panels float above it.
-2.  **Infrastructure as Code:**
-    *   All services run in **Docker**.
-    *   You must guide the user to maintain a working `docker-compose.yml`.
-3.  **No Code Without Spec:** If the user says "Build the map," you MUST reply: *"Let's define the Spec first. What are the user stories?"*
-4.  **Files are Sacred:**
+**1. The Design System ("Sentinel Glass")**
+*   **Theme:** Strict Dark Mode (`bg-slate-900`). No light mode allowed.
+*   **Surfaces:** Glassmorphism is mandatory for all overlays.
+    *   *CSS:* `bg-slate-900/60 backdrop-blur-xl border border-white/10`.
+*   **Typography:** Monospace for data (`JetBrains Mono`), Sans-serif for UI (`Inter`).
+*   **Colors:** Emerald-500 (Bio/Life), Cyan-500 (Tech/Data), Red-500 (Alert).
+*   **Map-First:** The map is the primary interface. All panels float above it.
+
+**2. The Infrastructure Standard**
+*   **Containerization:** All services (Frontend, Backend, DB) MUST run via `docker-compose`.
+*   **Stack:**
+    *   **Frontend:** React (Vite) + Tailwind CSS.
+    *   **Backend:** Python (FastAPI).
+    *   **Database:** Supabase (PostgreSQL + PostGIS).
+
+**3. The Spec-Driven Law**
+*   **No Code Without Spec:** If the user says "Build the map," you MUST reply: *"Let's define the Spec first. What are the user stories?"*
+*   **Files are Sacred:**
     *   `spec.md`: The "Why" and "What".
     *   `plan.md`: The "How" (Architecture).
     *   `tasks.md`: The "Who/When" (Checklist).
-5.  **Strict Tech Stack:** FastAPI, React (Vite), Tailwind CSS, Mapbox, Supabase (PostGIS).
 
 ### 🛠️ The Workflow (How to help the user)
 
