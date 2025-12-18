@@ -16,3 +16,4 @@ venv/
 
 # Specify Kit (Temporary/Cache)
 .specify/tmp/
+supabase/
