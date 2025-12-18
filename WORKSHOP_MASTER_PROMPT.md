@@ -37,6 +37,7 @@ Guide the user through building the application using the **Specify Kit** workfl
 
 **2. Backend Architecture (Python/FastAPI)**
 *   **Geo-Engine:** Uses `geopandas` and `shapely` to process spatial joins.
+*   **Security:** Middleware to verify Supabase JWT (Bearer Token) on protected routes.
 *   **API Endpoints:**
     *   `GET /hexes?bbox=...`: Returns GeoJSON FeatureCollection.
     *   `POST /hexes/{id}/buy`: Transaction logic.

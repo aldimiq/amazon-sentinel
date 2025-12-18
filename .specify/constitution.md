@@ -27,6 +27,7 @@ Every UI component MUST adhere to the **Sentinel Glass** aesthetic.
 *   **Zero Trust Database:** Row Level Security (RLS) MUST be enabled on all public tables.
     *   *Rule:* Never expose `public` schema without RLS policies.
 *   **API Fortress:** 
+    *   **Authentication:** Backend MUST verify Supabase JWTs (Bearer Token) for all protected endpoints.
     *   **CORS:** Strict allow-list for frontend domain only.
     *   **Validation:** All inputs must be validated via Pydantic models. No raw dict access.
 *   **Secret Sanitation:**
