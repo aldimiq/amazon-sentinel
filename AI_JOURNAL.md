@@ -149,3 +149,22 @@ This document logs the significant interactions and decisions made with the AI (
     *   Built `docker-compose.yml`, `backend/Dockerfile`, and `frontend/Dockerfile`.
     *   Updated `README.md` to prioritize the "Running with Docker" workflow.
 *   **Result**: The project is now fully containerized and the design system is legally binding within the Specify Kit.
+
+---
+
+## 2025-12-18 - Architectural Pivot: The "Hybrid Stack"
+
+**User Prompt:** "oke so now we have supabase as authentication, then frontend next js, and backend, i want the backend is using python framework, and for the database needed it will using resource from supabase also for the map i dont want to use mapbox, its paid use the opensource like openstreemap, cause i see in .envexample it still need to put mapbox token there"
+
+**AI Action:**
+*   **Strategic Shift:** Transitioned the project from a pure Next.js Server Actions approach to a **Hybrid Architecture**:
+    *   **Frontend:** Next.js 14 (UI/Auth).
+    *   **Backend:** Python FastAPI (Geo-Computation Logic).
+    *   **Map:** Switched from Mapbox to **OpenStreetMap** (Leaflet/MapLibre) to remove proprietary dependencies.
+    *   **Database:** Explicitly defined **Self-Hosted Supabase** (Docker) as the core state manager, with `auth` (Identity) and `public` (Data) schema separation.
+*   **Documentation Updates:**
+    *   Updated `WORKSHOP_MASTER_PROMPT.md`, `README.md`, and `.specify/constitution.md` to legally bind the project to these new constraints.
+    *   Refined `Amazon_Sentinel_System_Documentation.md` to detail the Python Backend's role in verifying Supabase JWTs.
+*   **New Artifacts:**
+    *   Created `Amazon_Sentinel_System_Design_and_Workflow.md` in Obsidian, featuring Mermaid diagrams for the new System Architecture and SDD Workflow.
+*   **Result:** The project is now fully specified for a robust, open-source, and cost-effective implementation.

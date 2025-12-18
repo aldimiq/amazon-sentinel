@@ -1,6 +1,7 @@
 import { Sidebar } from './components/layout/Sidebar'
 import { TopBar } from './components/layout/TopBar'
 import { MapLayer } from './components/map/MapLayer'
+import { AssetDetails } from './components/ui/AssetDetails'
 
 function App() {
   return (
@@ -29,10 +30,9 @@ function App() {
             <TopBar />
           </div>
 
-          {/* Dynamic Content Overlay (Optional) */}
-          <div className="flex-1 pointer-events-none">
-            {/* This area is empty to let the map show through, 
-                but can hold floating panels or modals */}
+          {/* Dynamic Content Overlay */}
+          <div className="flex-1 flex justify-end pointer-events-none">
+             <AssetDetails />
           </div>
         </div>
       </div>

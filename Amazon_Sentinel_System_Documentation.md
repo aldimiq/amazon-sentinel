@@ -25,33 +25,34 @@
 
 ### A. Infrastructure (The Foundation)
 *   **Containerization:** Fully Dockerized using `docker-compose`.
-    *   **Frontend:** Node 20 (Alpine) container running Vite (`:3000`).
-    *   **Backend:** Python 3.11 (Slim) container running FastAPI (`:8000`).
-    *   **Database:** PostGIS 15 container (`:5432`).
-*   **Orchestration:** Single command startup: `docker-compose up --build`.
+    *   **Frontend:** Next.js 14 container.
+    *   **Backend:** Python 3.11 (FastAPI) container.
+    *   **Database:** **Self-Hosted Supabase** (Official Docker Image).
+*   **Orchestration:** Multi-container setup.
 
-### B. Frontend (The "Sentinel Glass" Dashboard)
-*   **Visual Style:** "Sentinel Glass" (Dark Mode, Glassmorphism, Emerald/Cyan Accents).
-*   **Tech:** React (Vite) + Tailwind CSS v3 + **Mapbox GL JS**.
-*   **Key Components:**
-    *   **MapLayer:** Full-screen z-0 background.
-    *   **GlassOverlay:** Z-10 floating UI panels (Sidebar, TopBar).
-    *   **State:** Zustand for managing Map View and Selection.
+### B. Frontend (The "Sentinel Light" Interface)
+*   **Visual Style:** "Sentinel Light" (Modern Light Theme).
+*   **Tech:** Next.js 14 + Tailwind CSS.
+*   **Map Engine:** **Open-Source Only**.
+    *   *Library:* MapLibre GL JS or Leaflet.
+    *   *Tiles:* OpenStreetMap (OSM) or Carto Light.
+    *   *Constraint:* No proprietary tokens (Mapbox/Google).
 
-### C. Backend (The Geo-Engine)
-*   **Tech:** Python (**FastAPI**) + **GeoPandas** + **Shapely** + **AsyncPG**.
+### C. Backend (Python Intelligence)
+*   **Tech:** **FastAPI** + **GeoPandas** + **Shapely**.
 *   **Role:** The Intelligence Layer.
-    *   **Endpoint:** `GET /hexes?bbox=[...]` -> Returns GeoJSON FeatureCollection.
-    *   **Logic:**
-        *   `calculate_bio_score(hex_id)`: Spatial queries on species points.
-        *   `detect_deforestation(hex_id)`: (Mock) Satellite index processing.
+    *   **API:** Exposes endpoints for calculating Carbon/Biodiversity scores.
+    *   **DB Connection:** Connects directly to the Supabase Postgres instance.
+    *   **Security:** Middleware validates Supabase Auth Tokens passed from Frontend.
 
 ### D. Database & Auth (The State)
-*   **Tech:** **Supabase** (PostgreSQL + PostGIS Extension).
-*   **Schema:**
-    *   `hexes`: (`id`, `geom` (Polygon), `owner_id`, `status` [available, owned, alert], `bio_score`).
-    *   `species_sightings`: (`id`, `species_name`, `location` (Point), `timestamp`).
-    *   `transactions`: (`id`, `user_id`, `hex_id`, `amount`, `currency`).
+*   **Tech:** **Supabase** (PostgreSQL + PostGIS).
+*   **Schema Structure:**
+    *   **`auth` Schema:** Managed by Supabase GoTrue; contains the `users` table for authentication.
+    *   **`public` Schema:** Where the "Amazon Sentinel" data lives.
+        *   `hexes`: (`id`, `geom`, `owner_id` -> `auth.users`, `status`, `bio_score`).
+        *   `species_sightings`: (`id`, `species_name`, `location`, `timestamp`).
+*   **Security:** RLS policies in the `public` schema use `auth.uid()` to restrict access based on the user's session.
 
 ---
 

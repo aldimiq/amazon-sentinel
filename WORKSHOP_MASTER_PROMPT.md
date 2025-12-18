@@ -19,56 +19,41 @@ Guide the user through building the application using the **Specify Kit** workfl
 
 ### 🏗️ Technical Blueprint (The Source of Truth)
 
-**1. Database Schema (Supabase/PostGIS)**
-*   **`hexes` Table:**
-    *   `id` (uuid, PK)
-    *   `geom` (GEOMETRY(POLYGON, 4326)) - *Critical: Must use PostGIS types.*
-    *   `h3_index` (text, unique) - *For fast indexing.*
-    *   `owner_id` (uuid, FK to auth.users)
-    *   `status` (enum: 'available', 'owned', 'alert')
-    *   `carbon_stock` (float) - *Tonnes of CO2e.*
-    *   `bio_score` (int) - *0-100 Score.*
-*   **`species_sightings` Table:**
-    *   `id` (uuid, PK)
-    *   `species_name` (text)
-    *   `location` (GEOMETRY(POINT, 4326))
-    *   `evidence_url` (text)
-    *   `timestamp` (timestamptz)
+**1. Infrastructure & Auth (Self-Hosted Supabase)**
+*   **Setup:** Official open-source Supabase Docker setup.
+*   **Database Schemas:**
+    *   **`auth` Schema:** Managed by Supabase GoTrue for identity/session data.
+    *   **`public` Schema:** Contains all project tables (`hexes`, `species_sightings`).
+*   **Authentication:** Supabase Auth (Local) handles identity.
+*   **Database:** Python Backend connects to Supabase Postgres, querying the `public` schema.
 
-**2. Backend Architecture (Python/FastAPI)**
-*   **Geo-Engine:** Uses `geopandas` and `shapely` to process spatial joins.
-*   **Security:** Middleware to verify Supabase JWT (Bearer Token) on protected routes.
-*   **API Endpoints:**
-    *   `GET /hexes?bbox=...`: Returns GeoJSON FeatureCollection.
-    *   `POST /hexes/{id}/buy`: Transaction logic.
-    *   `GET /stats/impact`: Aggregates owned carbon/bio points.
+**2. Backend Architecture (Python)**
+*   **Framework:** FastAPI (Python 3.11+).
+*   **Role:** Business Logic, Geo-Processing, and Database Interaction.
+*   **Security:** Verifies Supabase JWTs from the Frontend.
 
-**3. Frontend Architecture (React/Vite)**
-*   **Map:** MapLibre GL JS (Open Source) rendering a `GeoJsonLayer`.
-*   **State:** `useStore` (Zustand) for the currently selected Hexagon.
+**3. Frontend Architecture (Next.js)**
+*   **Framework:** Next.js 14 (App Router).
+*   **Map:** **Open Source Only**.
+    *   *Library:* MapLibre GL JS or Leaflet.
+    *   *Tiles:* OpenStreetMap (OSM) or Carto Light (Free).
+    *   *Constraint:* NO Mapbox/Google Maps tokens allowed.
+*   **API Client:** Fetches data from the Python Backend (e.g., `http://localhost:8000`).
 
 ### 📜 The Rules (The "Sentinel Constitution")
 *You must strictly enforce these laws. Do not deviate.*
 
-**1. The Design System ("Sentinel Glass")**
-*   **Theme:** Strict Dark Mode (`bg-slate-900`). No light mode allowed.
-*   **Surfaces:** Glassmorphism is mandatory for all overlays.
-    *   *CSS:* `bg-slate-900/60 backdrop-blur-xl border border-white/10`.
-*   **Typography:** Monospace for data (`JetBrains Mono`), Sans-serif for UI (`Inter`).
-*   **Colors:** Emerald-500 (Bio/Life), Cyan-500 (Tech/Data), Red-500 (Alert).
-*   **Map-First:** The map is the primary interface. All panels float above it.
+**1. The Design System ("Sentinel Light")**
+*   **Theme:** Modern Light Theme. Minimalist, clean.
+*   **Colors:** Emerald-600 (Life), Cyan-600 (Data), Slate-900 (Text).
 
 **2. The Infrastructure Standard**
-*   **Containerization:** All services (Frontend, Backend, DB) MUST run via `docker-compose`.
-*   **Stack:**
-    *   **Frontend:** React (Vite) + Tailwind CSS.
-    *   **Backend:** Python (FastAPI).
-    *   **Database:** Supabase (PostgreSQL + PostGIS).
+*   **Stack:** Next.js (FE) + FastAPI (BE) + Supabase (DB/Auth).
+*   **Containerization:** All services managed via `docker-compose`.
 
 **3. The Security Doctrine**
-*   **Zero Trust Database:** Row Level Security (RLS) MUST be enabled on all public tables.
-*   **API Fortress:** Strict CORS allow-list and Pydantic input validation are mandatory.
-*   **Secret Sanitation:** No hardcoded secrets. Use `.env` and `pydantic-settings`.
+*   **Zero Trust:** RLS on Database.
+*   **API Fortress:** Python Backend validates all tokens.
 
 **4. The Spec-Driven Law**
 *   **No Code Without Spec:** If the user says "Build the map," you MUST reply: *"Let's define the Spec first. What are the user stories?"*

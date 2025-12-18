@@ -34,6 +34,10 @@
 
 ## Requirements *(mandatory)*
 
+### Access & Security
+- **Role Required**: [e.g., Public, Authenticated User, Admin]
+- **Data Privacy**: [e.g., "Users can only see their own hexes"]
+
 ### Functional Requirements
 
 - **FR-001**: System MUST [behavior].

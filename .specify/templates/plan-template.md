@@ -6,16 +6,27 @@
 [Brief summary of technical approach]
 
 ## Technical Context
-**Language/Version**: [Python 3.11 / Node 20]
-**Dependencies**: [e.g., FastAPI, Mapbox GL JS, GeoPandas]
-**Storage**: [Supabase / PostGIS]
-**Testing**: [pytest / vitest]
+**Framework**: Next.js 14 (App Router)
+**Auth/DB**: Supabase (Auth, Postgres, PostGIS)
+**State**: Zustand / URL Params
+**Styles**: Tailwind CSS (Sentinel Light)
 
 ## Constitution Check
 *GATE: Does this plan adhere to the "Amazon Sentinel" constitution?*
-- [ ] Geospatial data uses PostGIS types?
-- [ ] API follows GeoJSON standards?
-- [ ] Python code uses Pydantic?
+- [ ] Theme is Modern Light (Sentinel Light)?
+- [ ] No Client Components used where Server Components suffice?
+- [ ] Every mutation uses a Server Action with Zod validation?
+- [ ] RLS policies are defined for all new/modified tables?
+
+## Supabase & Database
+### Schema Changes
+```sql
+-- Describe migrations here
+```
+### RLS Policies
+- **Table [Name]**:
+    - Select: [Who can see?]
+    - Insert/Update: [Who can modify?]
 
 ## Project Structure
 
@@ -23,22 +34,24 @@
 ```text
 specs/[###-feature]/
 ├── plan.md
-├── research.md
-├── data-model.md
-├── contracts/
+├── schema.sql
 └── tasks.md
 ```
 
 ### Code Changes
-<!-- Define where code will live. -->
 ```text
-backend/app/
-├── routers/
-└── services/
+app/
+├── (auth)/
+├── api/
+└── [feature-route]/
 
-frontend/src/
-├── components/
-└── hooks/
+components/
+├── ui/
+└── [feature-components]/
+
+lib/
+├── supabase/
+└── actions/
 ```
 
 ## Complexity Tracking
