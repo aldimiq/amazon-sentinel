@@ -3,7 +3,7 @@ name: sentinel-apps
 services:
   backend:
     build: ./backend
-    container_name: sentinel-backend
+    container_name: backend
     restart: always
     ports:
       - "8001:8000"
@@ -18,7 +18,7 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: sentinel-frontend
+    container_name: frontend
     restart: always
     ports:
       - "3000:3000"

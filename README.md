@@ -53,8 +53,8 @@ Use the helper script to handle dependencies automatically:
 #### Access Points
 | Service | Docker Desktop | OrbStack (Mac) |
 | :--- | :--- | :--- |
-| **Frontend** | [localhost:3000](http://localhost:3000) | `sentinel-frontend.sentinel-apps.orb.local` |
-| **Backend** | [localhost:8001](http://localhost:8001) | `sentinel-backend.sentinel-apps.orb.local` |
+| **Frontend** | [localhost:3000](http://localhost:3000) | `frontend.sentinel-apps.orb.local` |
+| **Backend** | [localhost:8001](http://localhost:8001) | `backend.sentinel-apps.orb.local` |
 | **Supabase** | [localhost:8000](http://localhost:8000) | `kong.sentinel-auth.orb.local` |
 | **Studio** | [localhost:3000](http://localhost:3000/project/default) | `studio.sentinel-auth.orb.local` |
 
