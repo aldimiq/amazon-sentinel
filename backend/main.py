@@ -94,6 +94,16 @@ async def login(user: UserAuth):
         logger.error(f"Login Failed for {user.email}: {str(e)}")
         raise HTTPException(status_code=401, detail="Invalid email or password.")
 
+@app.get("/explorer/hexes")
+async def get_hexes():
+    try:
+        # Assuming the stored procedure returns a list of objects with h3_index, status, and geom
+        response = supabase.rpc("get_hexes_with_geojson", {}).execute()
+        return response.data
+    except Exception as e:
+        logger.error(f"Failed to fetch hexes: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/")
 def read_root():
     return {

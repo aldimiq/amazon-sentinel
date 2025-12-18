@@ -1,79 +1,101 @@
 'use client';
 
-import { MapContainer, TileLayer, useMap, GeoJSON } from 'react-leaflet';
+import { useEffect, useState, useRef } from 'react';
 import L from 'leaflet';
-import { useEffect, useState } from 'react';
 import { useExplorerStore } from '@/app/store/explorer';
 import { api } from '@/app/lib/api';
 import AssetDetails from '../ui/AssetDetails';
+import 'leaflet/dist/leaflet.css';
 
 export default function MapLayer() {
-  const center: [number, number] = [-3.4653, -62.2159];
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<L.Map | null>(null);
   const { setSelection } = useExplorerStore();
   const [geoData, setGeoData] = useState<any>(null);
-  // Initialize unique key immediately to handle Strict Mode double-mount
-  const [mapKey] = useState(() => `map-${Math.random()}`);
 
+  // 1. Fetch Data
   useEffect(() => {
-    // Fetch hex grid
-
-    // Fetch hex grid
     api.get('/explorer/hexes')
       .then(res => {
-        // Convert the backend array to GeoJSON FeatureCollection
         const features = res.data.map((h: any) => ({
           type: 'Feature',
           properties: { h3_index: h.h3_index, status: h.status },
-          geometry: h.geom // This assumes backend returns GeoJSON object
+          geometry: h.geom
         }));
         setGeoData({ type: 'FeatureCollection', features });
       })
       .catch(err => console.error('Map Load Error:', err));
   }, []);
 
-  const onHexClick = (e: any) => {
-    const h3Index = e.target.feature.properties.h3_index;
-    setSelection(h3Index);
-  };
+  // 2. Initialize Map Manually (Robust Fix)
+  useEffect(() => {
+    if (!mapRef.current) return;
+    if (mapInstance.current) return; // Prevent double init
 
-  const hexStyle = (feature: any) => ({
-    fillColor: feature.properties.status === 'available' ? '#10b981' : '#f59e0b',
-    weight: 1,
-    opacity: 0.3,
-    color: 'white',
-    fillOpacity: 0.1,
-  });
+    // Init Map
+    const map = L.map(mapRef.current, {
+      center: [-3.4653, -62.2159],
+      zoom: 13,
+      zoomControl: false,
+      scrollWheelZoom: true,
+    });
+    mapInstance.current = map;
+
+    // Add Tile Layer
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; CARTO'
+    }).addTo(map);
+
+    // Cleanup on unmount
+    return () => {
+      map.remove();
+      mapInstance.current = null;
+    };
+  }, []);
+
+  // 3. Update GeoJSON Layer when data changes
+  useEffect(() => {
+    if (!mapInstance.current || !geoData) return;
+
+    const hexStyle = (feature: any) => ({
+      fillColor: feature.properties.status === 'available' ? '#10b981' : '#f59e0b',
+      weight: 1,
+      opacity: 0.3,
+      color: 'white',
+      fillOpacity: 0.1,
+    });
+
+    const onHexClick = (e: any) => {
+      const h3Index = e.target.feature.properties.h3_index;
+      setSelection(h3Index);
+    };
+
+    const geoJsonLayer = L.geoJSON(geoData, {
+      style: hexStyle,
+      onEachFeature: (feature, layer) => {
+        layer.on({
+          click: onHexClick
+        });
+      }
+    }).addTo(mapInstance.current);
+
+    // Zoom control
+    L.control.zoom({ position: 'bottomright' }).addTo(mapInstance.current);
+
+    return () => {
+      if (mapInstance.current) {
+        mapInstance.current.removeLayer(geoJsonLayer);
+      }
+    };
+  }, [geoData, setSelection]);
 
   return (
     <div className="h-full w-full relative group">
       <div className="digital-twin-bg" />
       <div className="scan-line" />
 
-      <MapContainer
-        key={mapKey}
-        center={center}
-        zoom={13}
-        scrollWheelZoom={true}
-        className="z-0"
-        zoomControl={false}
-      >
-        <TileLayer
-          attribution='&copy; CARTO'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        />
-
-        {geoData && (
-          <GeoJSON
-            data={geoData}
-            style={hexStyle}
-            eventHandlers={{
-              click: onHexClick
-            }}
-          />
-        )}
-
-        <MapController />
-      </MapContainer>
+      {/* Map Container Ref */}
+      <div ref={mapRef} className="h-full w-full z-0" />
 
       {/* Selected Asset Floating Panel */}
       <AssetDetails />
@@ -112,12 +134,4 @@ export default function MapLayer() {
       </div>
     </div>
   );
-}
-
-function MapController() {
-  const map = useMap();
-  useEffect(() => {
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-  }, [map]);
-  return null;
 }

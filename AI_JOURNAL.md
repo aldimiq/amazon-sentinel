@@ -196,4 +196,5 @@ This document logs the significant interactions and decisions made with the AI (
     *   **Dependencies:** ran `npm install --legacy-peer-deps` to fix React 19/Lucide conflicts.
     *   **OrbStack Support:** Explicitly patched `backend/main.py` to allow `*.orb.local` domains in CORS, ensuring smooth operation on macOS OrbStack environments.
     *   **Map Stability:** Fixed a "Map container already initialized" crash by implementing a lazy-initialized unique key for the Leaflet container, ensuring compatibility with React Strict Mode.
+    *   **Backend:** Added missing `/explorer/hexes` route to serve spatial data, resolving 404 errors.
 *   **Result:** The application now reliably connects in local and OrbStack environments with robust error login.
