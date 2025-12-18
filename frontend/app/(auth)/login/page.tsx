@@ -69,6 +69,7 @@ export default function LoginPage() {
             <input
               type="email"
               required
+              suppressHydrationWarning
               className="block w-full rounded-2xl bg-white/50 border-white/40 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-white/60 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm px-4 backdrop-blur-sm transition-all"
               placeholder="Email address"
               value={email}
@@ -77,6 +78,7 @@ export default function LoginPage() {
             <input
               type="password"
               required
+              suppressHydrationWarning
               className="block w-full rounded-2xl bg-white/50 border-white/40 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-white/60 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm px-4 backdrop-blur-sm transition-all"
               placeholder="Password"
               value={password}
