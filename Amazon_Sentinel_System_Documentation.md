@@ -30,20 +30,22 @@
     *   **Database:** **Self-Hosted Supabase** (Official Docker Image).
 *   **Orchestration:** Multi-container setup.
 
-### B. Frontend (The "Sentinel Light" Interface)
-*   **Visual Style:** "Sentinel Light" (Modern Light Theme).
-*   **Tech:** Next.js 14 + Tailwind CSS.
-*   **Map Engine:** **Open-Source Only**.
-    *   *Library:* MapLibre GL JS or Leaflet.
-    *   *Tiles:* OpenStreetMap (OSM) or Carto Light.
-    *   *Constraint:* No proprietary tokens (Mapbox/Google).
+### A. Frontend (The "Sentinel Light" Interface)
+*   **Tech:** Next.js 14 (App Router) + **OpenStreetMap**.
+*   **Role:** Pure UI Presentation.
+*   **Networking:**
+    *   **Strict Constraint:** Talks **ONLY** to the Python Backend (`NEXT_PUBLIC_API_URL`).
+    *   **No Direct DB/Auth:** Does *not* have access to Supabase keys.
 
-### C. Backend (Python Intelligence)
-*   **Tech:** **FastAPI** + **GeoPandas** + **Shapely**.
-*   **Role:** The Intelligence Layer.
-    *   **API:** Exposes endpoints for calculating Carbon/Biodiversity scores.
-    *   **DB Connection:** Connects directly to the Supabase Postgres instance.
-    *   **Security:** Middleware validates Supabase Auth Tokens passed from Frontend.
+### B. Backend (The Intelligence & Proxy)
+*   **Tech:** Python 3.11 (**FastAPI**).
+*   **Role:** The Gateway & Logic Engine.
+    *   **Data Proxy:** Fetches Hexes/Sightings from Supabase.
+    *   **Auth Proxy:** Handles Login/Signup requests and forwards them to Supabase GoTrue.
+    *   **Security:** Holds the `SERVICE_ROLE_KEY` to manage data access.
+
+### C. Database (The State)
+
 
 ### D. Database & Auth (The State)
 *   **Tech:** **Supabase** (PostgreSQL + PostGIS).

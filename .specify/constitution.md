@@ -26,10 +26,10 @@ Every UI component MUST adhere to the **Sentinel Light** aesthetic.
 *   **Atomic Tasks:** Granular implementation tasks.
 
 ## 4. The Security Doctrine
+*   **Strict Gateway Pattern:**
+    *   **Frontend:** Must **ONLY** communicate with the Python Backend. Direct calls to Supabase (Data or Auth) are **PROHIBITED**.
+    *   **Backend:** Acts as the unified proxy for Auth and Data.
 *   **Zero Trust Database:** RLS enabled on all tables in the **`public`** schema.
 *   **Schema Separation:**
-    *   **`auth` Schema:** Strictly reserved for Supabase Identity (GoTrue). Do not modify.
-    *   **`public` Schema:** All application data (Hexes, Sightings, User Profiles) must reside here.
-*   **Identity Mapping:** 
-    *   Tables in `public` that are user-specific must have a `user_id` column of type `UUID` referencing `auth.users(id)`.
-*   **API Fortress:** Python Backend MUST verify Supabase JWTs. Validated user context from `auth` should be used to filter queries in `public`.
+    *   **`auth` Schema:** Strictly reserved for Supabase Identity.
+    *   **`public` Schema:** All application data (`hexes`, `sightings`).

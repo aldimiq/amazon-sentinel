@@ -29,16 +29,16 @@ Guide the user through building the application using the **Specify Kit** workfl
 
 **2. Backend Architecture (Python)**
 *   **Framework:** FastAPI (Python 3.11+).
-*   **Role:** Business Logic, Geo-Processing, and Database Interaction.
-*   **Security:** Verifies Supabase JWTs from the Frontend.
+*   **Role:** Unified Gateway for Data and Auth.
+*   **Auth Proxy:** Must expose `/auth/login` and `/auth/signup` that delegate to Supabase.
+*   **Security:** Holds the Privileged Keys.
 
 **3. Frontend Architecture (Next.js)**
 *   **Framework:** Next.js 14 (App Router).
-*   **Map:** **Open Source Only**.
-    *   *Library:* MapLibre GL JS or Leaflet.
-    *   *Tiles:* OpenStreetMap (OSM) or Carto Light (Free).
-    *   *Constraint:* NO Mapbox/Google Maps tokens allowed.
-*   **API Client:** Fetches data from the Python Backend (e.g., `http://localhost:8000`).
+*   **Constraint:** **NO Direct Supabase Connection.**
+    *   Authentication: Sends credentials to Python Backend.
+    *   Data: Fetches JSON from Python Backend.
+*   **Map:** Open Source (Leaflet/MapLibre) with OSM tiles.
 
 ### 📜 The Rules (The "Sentinel Constitution")
 *You must strictly enforce these laws. Do not deviate.*

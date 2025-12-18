@@ -27,8 +27,6 @@ services:
       - /app/node_modules
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${ANON_KEY}
     networks:
       - sentinel-auth_default
 
