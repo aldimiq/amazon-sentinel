@@ -11,8 +11,12 @@ export default function MapLayer() {
   const center: [number, number] = [-3.4653, -62.2159];
   const { setSelection } = useExplorerStore();
   const [geoData, setGeoData] = useState<any>(null);
+  // Initialize unique key immediately to handle Strict Mode double-mount
+  const [mapKey] = useState(() => `map-${Math.random()}`);
 
   useEffect(() => {
+    // Fetch hex grid
+
     // Fetch hex grid
     api.get('/explorer/hexes')
       .then(res => {
@@ -45,9 +49,10 @@ export default function MapLayer() {
       <div className="digital-twin-bg" />
       <div className="scan-line" />
 
-      <MapContainer 
-        center={center} 
-        zoom={13} 
+      <MapContainer
+        key={mapKey}
+        center={center}
+        zoom={13}
         scrollWheelZoom={true}
         className="z-0"
         zoomControl={false}
@@ -56,10 +61,10 @@ export default function MapLayer() {
           attribution='&copy; CARTO'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
-        
+
         {geoData && (
-          <GeoJSON 
-            data={geoData} 
+          <GeoJSON
+            data={geoData}
             style={hexStyle}
             eventHandlers={{
               click: onHexClick
@@ -89,19 +94,19 @@ export default function MapLayer() {
           <div className="flex flex-col">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Region</span>
             <div className="flex items-baseline gap-1">
-               <span className="text-2xl font-black text-slate-900 tracking-tighter uppercase">Amazon Basin</span>
+              <span className="text-2xl font-black text-slate-900 tracking-tighter uppercase">Amazon Basin</span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/20">
-             <div>
-                <div className="text-[9px] font-black text-slate-400 uppercase">Latency</div>
-                <div className="text-xs font-bold text-slate-900 font-mono">24ms</div>
-             </div>
-             <div>
-                <div className="text-[9px] font-black text-slate-400 uppercase">Uplink</div>
-                <div className="text-xs font-bold text-emerald-600 font-mono">ACTIVE</div>
-             </div>
+            <div>
+              <div className="text-[9px] font-black text-slate-400 uppercase">Latency</div>
+              <div className="text-xs font-bold text-slate-900 font-mono">24ms</div>
+            </div>
+            <div>
+              <div className="text-[9px] font-black text-slate-400 uppercase">Uplink</div>
+              <div className="text-xs font-bold text-emerald-600 font-mono">ACTIVE</div>
+            </div>
           </div>
         </div>
       </div>

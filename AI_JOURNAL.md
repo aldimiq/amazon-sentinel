@@ -195,4 +195,5 @@ This document logs the significant interactions and decisions made with the AI (
     *   **Frontend Config:** Updated `app/lib/api.ts` to sanitize (trim) `NEXT_PUBLIC_API_URL` and fall back to `127.0.0.1` (IPv4) instead of `localhost` to resolve Docker networking conflicts.
     *   **Dependencies:** ran `npm install --legacy-peer-deps` to fix React 19/Lucide conflicts.
     *   **OrbStack Support:** Explicitly patched `backend/main.py` to allow `*.orb.local` domains in CORS, ensuring smooth operation on macOS OrbStack environments.
+    *   **Map Stability:** Fixed a "Map container already initialized" crash by implementing a lazy-initialized unique key for the Leaflet container, ensuring compatibility with React Strict Mode.
 *   **Result:** The application now reliably connects in local and OrbStack environments with robust error login.
