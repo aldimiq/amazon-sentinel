@@ -15,9 +15,21 @@ export const api = axios.create({
 import { useAuthStore } from '../store/auth';
 
 api.interceptors.request.use((config) => {
+  console.log(`📡 [API Request] ${config.method?.toUpperCase()} ${config.url}`);
   const token = useAuthStore.getState().token;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => {
+    console.log(`✅ [API Response] ${response.status} from ${response.config.url}`);
+    return response;
+  },
+  (error) => {
+    console.error(`❌ [API Error] ${error.response?.status || 'Network Error'} from ${error.config?.url}`);
+    return Promise.reject(error);
+  }
+);

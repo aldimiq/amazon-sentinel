@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { 
   LayoutDashboard, 
   Map as MapIcon, 
@@ -26,9 +27,15 @@ export default function Sidebar() {
   const pathname = usePathname();
   const logout = useAuthStore((state) => state.logout);
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 glass-panel border-r border-white/20">
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <aside className="fixed left-0 top-0 z-40 h-screen w-64 glass-panel border-r border-white/20" />;
+  }
       <div className="flex h-full flex-col px-4 py-8">
         {/* Brand */}
         <div className="mb-10 flex items-center gap-3 px-3">

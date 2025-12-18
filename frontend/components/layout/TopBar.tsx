@@ -2,9 +2,15 @@
 
 import { Search, User, Bell, Cpu } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth';
+import { useEffect, useState } from 'react';
 
 export default function TopBar() {
   const user = useAuthStore((state) => state.user);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="fixed top-0 right-0 z-30 h-16 left-64 glass-panel border-b border-white/20 flex items-center justify-between px-10">
@@ -33,10 +39,10 @@ export default function TopBar() {
         <div className="flex items-center gap-4 pl-6 border-l border-white/10">
           <div className="text-right">
             <div className="text-xs font-black text-slate-900 leading-none">
-              {user?.email?.split('@')[0].toUpperCase() || 'OPERATOR'}
+              {(mounted && user?.email) ? user.email.split('@')[0].toUpperCase() : 'OPERATOR'}
             </div>
             <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-              Auth-Verified
+              {mounted && user ? 'Auth-Verified' : 'Establishing...'}
             </div>
           </div>
           <div className="h-10 w-10 rounded-2xl bg-white/60 border border-white/60 shadow-inner flex items-center justify-center text-slate-600">

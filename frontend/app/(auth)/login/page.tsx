@@ -5,11 +5,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/app/lib/api';
 import { useAuthStore } from '@/app/store/auth';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
   
+  useEffect(() => {
+    console.log("🛠️ Testing Backend Connectivity...");
+    api.get('/')
+      .then(res => console.log("🟢 Backend is REACHABLE:", res.data))
+      .catch(err => console.error("🔴 Backend is UNREACHABLE:", err.message));
+  }, []);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
