@@ -1,23 +1,20 @@
-# Tasks: UI/UX Overhaul
+# Tasks: Sentinel Light & BFF Auth
 
-## Phase 1: Setup & Styling
-- [ ] **Install Dependencies**: `npm install -D tailwindcss postcss autoprefixer` && `npx tailwindcss init -p`.
-- [ ] **Configure Tailwind**: Update `tailwind.config.js` with "sentinel-dark" colors and `content` paths.
-- [ ] **Global CSS**: Update `index.css` to remove default Vite styles and add `@tailwind` directives.
-- [ ] **Install UI Libs**: `npm install lucide-react clsx tailwind-merge framer-motion`.
+## Phase 1: Backend Auth Proxy
+- [x] **Auth Client**: Initialize Supabase Auth client in Python.
+- [x] **Routes**: Implement `/auth/signup`, `/auth/login`, `/auth/logout`.
+- [x] **Verification**: Test auth flows with Postman/Curl.
 
-## Phase 2: The "Glass" Layout
-- [ ] **Create Component**: `src/components/ui/GlassCard.tsx` (Base container).
-- [ ] **Create Component**: `src/components/layout/Sidebar.tsx` (Left panel with icons).
-- [ ] **Create Component**: `src/components/layout/TopBar.tsx` (Logo and status).
-- [ ] **Assemble Layout**: Update `App.tsx` to use the new Layout structure.
+## Phase 2: Frontend Auth UI
+- [x] **Layout**: Create standard auth layout (centered cards).
+- [x] **Signup Page**: Build signup form with basic validation.
+- [x] **Login Page**: Build login form.
+- [x] **Integration**: Connect forms to Python Backend API.
 
-## Phase 3: Map Integration
-- [ ] **Install Map Libs**: `npm install react-map-gl mapbox-gl`.
-- [ ] **Create Component**: `src/components/map/MapLayer.tsx`.
-- [ ] **Env Setup**: Create `.env.local` for `VITE_MAPBOX_TOKEN`.
-- [ ] **Integration**: Render the Map behind the Glass UI in `App.tsx`.
+## Phase 3: Dashboard Shell (Sentinel Light)
 
-## Phase 4: Polish
-- [ ] **Animation**: Add simple enter animations using `framer-motion`.
-- [ ] **Fonts**: Import a tech-font (e.g., Google Fonts 'Rajdhani' or 'Inter').
+- [x] **Main Layout**: Sidebar + Map Area (Light Theme).
+
+- [x] **Map Integration**: Leaflet/MapLibre with OSM tiles.
+
+- [x] **State**: Persist user session in Zustand.

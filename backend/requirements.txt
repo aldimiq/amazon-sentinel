@@ -5,8 +5,10 @@ asyncpg==0.29.0
 geoalchemy2==0.14.3
 geopandas==0.14.2
 shapely==2.0.2
-httpx==0.26.0
+httpx
 pydantic==2.5.3
 pydantic-settings==2.1.0
+email-validator
 python-multipart==0.0.6
 h3==3.7.6
+supabase
