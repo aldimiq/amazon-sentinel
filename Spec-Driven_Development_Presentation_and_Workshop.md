@@ -33,96 +33,82 @@
 3.  **Success Criteria (SCs):**
     *   Binary and measurable (e.g., "SC-001: API returns 200 OK in <200ms").
 
-### Slide 5: The Workflow
+### Slide 5: The Workflow - From Spec to Code
 1.  **Draft:** Create the folder `specs/XXX-feature-name`.
 2.  **Define:** Fill out `spec.md`. Focus on the *User's* perspective.
 3.  **Plan:** Once the spec is "frozen," write `plan.md`. How will we build this?
-4.  **Execute:** Break the plan into `tasks.md` and start coding.
-5.  **Verify:** Check the final output against the `Success Criteria` in `spec.md`.
+4.  **Review (NEW):** Run `/speckit.review` to let AI critique your plan against the Constitution.
+5.  **Execute:** Break the plan into `tasks.md`. **Crucial Step: Write failing tests FIRST.**
+6.  **Verify:** Check the final output against the `Success Criteria` in `spec.md`.
 
 ---
 
-## Part 2: Workshop Project - "BioLink Validator" 🔗🌿
+## Part 2: Workshop Project - "The Amazon Sentinel" 🛰️🐆
 
 ### Project Concept
-We will build **"BioLink Validator"**, a "Co-Benefit" verification platform.
-*   **The Problem:** Standard Carbon Credits are becoming a commodity. High-quality projects that *also* restore biodiversity (e.g., save Jaguars) struggle to prove their extra value.
-*   **The Solution:** A system that allows Carbon Projects to "upsell" their credits by verifying biodiversity claims, creating a "Premium Nature-Positive Credit."
-
-### Technical Stack (Constraints)
-*   **Frontend:** React (Vite) + Tailwind CSS.
-*   **Backend/Auth:** Supabase (Auth + Database + Storage).
-*   **Map/Geo:** Leaflet or Mapbox (for polygon visualization).
+We will build **"The Amazon Sentinel"**, a geospatial investment platform.
+*   **The Problem:** People want to invest in nature but lack transparency.
+*   **The Solution:** A "Digital Twin" of the Amazon where users buy 1km² Hexagons. Each Hex tracks Carbon (trees) + Biodiversity (animals).
+*   **The Tech:** Python (FastAPI) + React (Mapbox) + Supabase (PostGIS).
 
 ---
 
 ## Workshop Flow
 
-### Phase 1: The "Dual-Asset" Spec (Group Exercise)
-**Goal:** Participants will define the data model for a Project that tracks both Carbon and Biodiversity.
+### Phase 1: The "Geo-Asset" Spec (Group Exercise)
+**Goal:** Participants will define the "Hexagon" as a financial asset.
 
 **Scenario for Participants:**
-> "You are building the registry for BioLink. A developer wants to register their 'Amazon Reforestation' project. They already have a Verra/Gold Standard Carbon ID. Now they want to apply for a 'Bio-Badge'."
+> "You are building the land registry. We need to divide the Amazon into 1km² chunks. Users can 'buy' a chunk."
 
 **Key Discussion Points for `spec.md`:**
 1.  **User Stories:**
-    *   "As a Project Developer, I want to register my project by linking my existing Carbon ID..."
-    *   "As an Investor, I want to see the 'Biodiversity Score' of a carbon project..."
+    *   "As an Investor, I want to view the Amazon grid..."
+    *   "As an Investor, I want to buy a Hexagon..."
 2.  **Functional Requirements (FRs):**
-    *   **FR-001:** `Project` entity must include a valid `carbon_standard_id` (string) and `polygon_geometry` (GeoJSON).
-    *   **FR-002:** The system must prevent duplicate registrations of the same Carbon ID (Unique Constraint).
-    *   **FR-003:** A Project starts with a `BioScore` of 0 until evidence is uploaded.
+    *   **FR-001:** Database MUST store polygons using PostGIS `GEOMETRY` type.
+    *   **FR-002:** System MUST prevent double-purchase of the same Hex (Unique Constraint).
 3.  **Success Criteria (SC):**
-    *   **SC-001:** Submitting a registration form creates a new row in Supabase with the correct GeoJSON data.
-    *   **SC-002:** Attempting to register the same Carbon ID twice results in a user-friendly error message.
+    *   **SC-001:** API returns a GeoJSON FeatureCollection of 100+ hexes in < 500ms.
 
-### Phase 2: The "Evidence Locker" Spec (Pair Exercise)
-**Goal:** Define how proof (Images/Audio) is handled.
-
-**Scenario for Participants:**
-> "To earn a 'Jaguar Badge', the developer must upload proof. We need a secure way to store this evidence and link it to the project."
-
-**Key Discussion Points for `spec.md`:**
-1.  **Data Modeling (The Plan):**
-    *   Table: `evidence` (`id`, `project_id`, `file_url`, `gps_lat`, `gps_long`, `timestamp`, `status`).
-    *   Enum: `status` [`pending`, `ai_processing`, `verified`, `rejected`].
-2.  **User Stories:**
-    *   "As a Developer, I want to upload a batch of camera trap photos..."
-    *   *Edge Case:* What if the photo's GPS coordinates are *outside* the project's polygon? (Auto-reject or flag).
-3.  **Success Criteria:**
-    *   **SC-001:** Uploaded files appear in Supabase Storage buckets.
-    *   **SC-002:** The database record contains the correct public URL of the image.
-
-### Phase 3: The "Premium Marketplace" Spec (Individual Challenge)
-**Goal:** Specify the Search & Discovery interface.
+### Phase 2: The "Bio-Pricing" Engine (Pair Exercise)
+**Goal:** Implement the logic: `Price = Carbon + Biodiversity`.
 
 **Scenario for Participants:**
-> "Buyers want to filter projects. They are looking for 'High Carbon Density' + 'Endangered Species'."
+> "A Hex with a Jaguar is worth more than a Hex with just trees. We need a pricing engine that reads species data."
 
-**Key Discussion Points for `spec.md`:**
-1.  **Logic-Heavy Specs:**
-    *   Define the "Search Query": `SELECT * FROM projects WHERE co2_tonnes > 1000 AND bio_score > 50`.
-2.  **User Stories:**
-    *   "As a Buyer, I can filter projects by 'Species Protected'..."
-3.  **Success Criteria:**
-    *   **SC-001:** The filter UI updates the results list in < 200ms.
-    *   **SC-002:** Projects with `BioScore = 0` are excluded from "Premium" searches.
+**Key Discussion Points for `plan.md`:**
+1.  **Architecture:** We need a Python Service `calculate_price(hex_id)`.
+2.  **TDD Strategy (Mandatory):**
+    *   Write a test: `test_price_increases_with_jaguar()`.
+    *   Run test -> FAIL.
+    *   Write code -> PASS.
+
+### Phase 3: The "Sentinel" Alert System (Individual Challenge)
+**Goal:** Handle the "Risk" component (Deforestation).
+
+**Scenario for Participants:**
+> "Satellite data shows a fire in Hex #123. We need to trigger an Alert status."
+
+**Key Discussion Points:**
+1.  **State Machine:** Hex Status transitions from `Active` -> `Alert`.
+2.  **Success Criteria:** When `NDVI` metric drops < 0.4, the API must return `status: "alert"`.
 
 ---
 
 ## "Golden Spec" Cheat Sheet
 *Use this to guide the participants.*
 
-### Feature: `001-project-registry`
+### Feature: `001-geo-asset-registry`
 
 #### User Stories
-*   **US-1 (P1):** Project Registration. Carbon developers can onboard their existing projects.
-*   **US-2 (P2):** Geo-Fencing. The system validates that the project is in a valid location.
+*   **US-1 (P1):** Map Visualization. Investors can see the grid.
+*   **US-2 (P1):** Purchase Flow. Investors can buy a hex.
 
 #### Functional Requirements
-*   **FR-001**: Supabase Table `projects` with columns: `id` (uuid), `name` (text), `carbon_id` (text, unique), `bio_score` (int, default 0), `geom` (geometry/point/polygon).
-*   **FR-002**: Validation Logic: Ensure `carbon_id` format matches standard regex (e.g., `^VCS-\d+$`).
+*   **FR-001**: Supabase Table `hexes` with columns: `id` (uuid), `geom` (GEOMETRY), `owner_id` (uuid), `status` (enum).
+*   **FR-002**: API Endpoint `GET /hexes` returns standard RFC 7946 GeoJSON.
 
 #### Success Criteria
-*   **SC-001**: A valid registration redirects the user to their new "Project Dashboard".
-*   **SC-002**: The "Project Dashboard" displays a map centered on the provided coordinates.
+*   **SC-001**: Frontend renders the hex grid without lag (60fps).
+*   **SC-002**: Database successfully rejects duplicate purchase attempts.
