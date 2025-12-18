@@ -11,14 +11,16 @@
 - [x] **Login Page**: Build login form.
 - [x] **Integration**: Connect forms to Python Backend API.
 
-## Phase 4: Glasskit UI (Apple Style)
+## Phase 5: Sci-Fi & 3D Core
 
-- [x] **Global CSS**: Define `glass-surface` and `glass-card` tokens with `backdrop-blur-2xl`.
+- [x] **Three.js Integration**: Implement the 3D Bio-Core shader in the sidebar.
 
-- [x] **Auth Glass**: Apply glass styling to Login/Signup cards.
+- [x] **Digital Twin Background**: Add animated grid and scan-lines to the map view.
 
-- [x] **Shell Glass**: Apply high-transparency blur to Sidebar and TopBar.
+- [x] **HUD Elements**: Implement specialized corner decorations and pulse indicators for live data.
 
-- [x] **Refined Geometry**: Implement large corner radii (2xl/3xl) for all surfaces.
+- [x] **Living UI**: Ensure all elements feel part of a real-time monitoring system.
+
+
 
 

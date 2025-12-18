@@ -1,17 +1,10 @@
 # 📜 The Sentinel Constitution
 *The Supreme Law of the Codebase*
 
-## 1. The Design System ("Sentinel Glass Light")
-Every UI component MUST adhere to the **Sentinel Glass** aesthetic, inspired by Apple's Glasskit.
-*   **Theme:** Modern Light Theme with heavy background blur.
-*   **Surfaces:** 
-    *   Primary Panels: `bg-white/40 backdrop-blur-2xl border border-white/40`.
-    *   Floating Cards: `bg-white/60 backdrop-blur-xl border border-white/50 shadow-xl`.
-*   **Geometry:** Large corner radii (`rounded-2xl` for components, `rounded-[2.5rem]` for main containers).
-*   **Colors:**
-    *   Primary: Emerald 600 (`#059669`) - For Bio.
-    *   Accent: Cyan 600 (`#0891B2`) - For Data.
-    *   Base: Slate-900 for text, White/Slate-50 for backgrounds.
+*   **Aesthetics:** Every interface must feel like a "Digital Twin".
+    *   Implement animated scan-lines (`scan-line` class).
+    *   Use HUD-style corner decorations (`hud-corner`) for map overlays.
+    *   **3D Content:** Real-time shaders (Three.js) must be used to represent complex biological data.
 
 ## 2. The Infrastructure Standard
 *   **Containerization:** All services MUST run via `docker-compose`. 
