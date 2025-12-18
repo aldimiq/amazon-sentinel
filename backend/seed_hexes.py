@@ -1,39 +1,55 @@
+import os
 import h3
-import random
+from supabase import create_client, Client
+from shapely.geometry import Polygon, mapping
 
-# Center of Manaus, Brazil
-LAT = -3.119
-LNG = -60.0217
-RESOLUTION = 8  # ~1km2
+SUPABASE_URL = os.getenv("SUPABASE_URL", "http://kong:8000")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def generate_hexes(count=500):
-    # Get the H3 index for the center
-    center_h3 = h3.geo_to_h3(LAT, LNG, RESOLUTION)
+def seed_amazon_hexes():
+    print("🛰️ Initializing Satellite Seed...")
     
-    # Get a cluster of hexes around the center
-    hexes = h3.k_ring(center_h3, 15) # 15 rings should give us plenty
+    # Coordinates for a spot in the Amazon (near Manaus)
+    lat, lng = -3.4653, -62.2159
     
-    selected_hexes = list(hexes)[:count]
+    # Get a ring of hexes at resolution 7 (~5km across)
+    # Using res 7 for better performance in the prototype
+    center_hex = h3.geo_to_h3(lat, lng, 7)
+    hexes = h3.k_ring(center_hex, 10) # Get 10 rings of hexes
     
-    sql_statements = []
+    data_to_insert = []
     
-    for h_index in selected_hexes:
-        # Get coordinates for the hexagon boundary
-        boundary = h3.h3_to_geo_boundary(h_index)
-        # Close the polygon (last point = first point)
-        boundary = list(boundary) + [boundary[0]]
-        # Convert to WKT: POLYGON((lng lat, lng lat, ...))
-        wkt = "POLYGON((" + ", ".join([f"{lon} {lat}" for lat, lon in boundary]) + "))"
+    for h_index in hexes:
+        # Get coordinates for the polygon
+        geo_boundary = h3.h3_to_geo_boundary(h_index)
+        # Convert to GeoJSON format (lon, lat)
+        geojson_poly = [[p[1], p[0]] for p in geo_boundary]
+        geojson_poly.append(geojson_poly[0]) # Close the loop
         
-        status = random.choice(['available', 'available', 'available', 'owned', 'alert'])
-        carbon = round(random.uniform(100, 500), 2)
-        bio = random.randint(40, 95)
+        # Simple mock data
+        carbon = round(100 + (hash(h_index) % 50), 2)
+        bio = hash(h_index) % 100
         
-        sql = f"INSERT INTO hexes (h3_index, geom, status, carbon_stock, bio_score) VALUES ('{h_index}', ST_GeomFromText('{wkt}', 4326), '{status}', {carbon}, {bio}) ON CONFLICT (h3_index) DO NOTHING;"
-        sql_statements.append(sql)
+        # PostGIS WKT format
+        wkt_geom = f"POLYGON(({','.join([f'{p[0]} {p[1]}' for p in geojson_poly])}))"
+        
+        data_to_insert.append({
+            "h3_index": h_index,
+            "geom": wkt_geom,
+            "carbon_stock": carbon,
+            "bio_score": bio,
+            "status": "available"
+        })
+
+    print(f"📦 Prepared {len(data_to_insert)} hexes. Syncing with Supabase...")
     
-    return sql_statements
+    # Insert in chunks
+    for i in range(0, len(data_to_insert), 50):
+        chunk = data_to_insert[i:i+50]
+        supabase.table("hexes").upsert(chunk).execute()
+        
+    print("✅ Seed Complete.")
 
 if __name__ == "__main__":
-    statements = generate_hexes()
-    print("\n".join(statements))
+    seed_amazon_hexes()

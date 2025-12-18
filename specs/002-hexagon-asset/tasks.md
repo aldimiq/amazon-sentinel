@@ -1,20 +1,16 @@
-# Tasks: Hexagon Asset Grid
+# Tasks: Hexagon Asset Selection
 
 ## Phase 1: Database & Seed
-- [x] **Migration**: Create SQL migration script for `hexes` table.
-- [x] **Seed Script**: Create a Python script to populate the DB with ~500 hexagons near Manaus using `h3`.
+- [x] **Migration**: Create `001_create_hexes.sql` in `backend/migrations`.
+- [x] **Seed Script**: Create a Python script to seed the Amazon region with initial H3 hexes.
 
 ## Phase 2: Backend API
-- [x] **Schema**: Define Pydantic models for `HexFeature` and `HexCollection`. (Note: Used direct SQL for performance).
-- [x] **Route**: Implement `GET /api/v1/hexes` in `backend/main.py`.
-- [x] **Logic**: Implement spatial filtering using SQLAlchemy/GeoAlchemy2.
+- [x] **Spatial Router**: Implement the explorer router in FastAPI.
+- [x] **GeoJSON Generator**: Logic to convert H3 indexes to GeoJSON features.
+- [x] **Pricing Engine**: Implement `Price = Carbon + (Bio * Premium)`.
 
-## Phase 3: Frontend Map
-- [x] **Zustand**: Add `selectedHex` and `setSelectedHex` to the store.
-- [x] **MapLayer**: Implement the GeoJSON source and layers in `frontend/src/components/map/MapLayer.tsx`.
-- [x] **Interactions**: Add click and hover handlers to the map.
-- [x] **UI**: Add `AssetDetails` glass panel.
-
-## Phase 4: Verification
-- [x] **Visual Check**: Verify hexes render with correct colors.
-- [x] **Interaction Check**: Verify clicking a hex highlights it and logs the data.
+## Phase 3: Frontend Explorer
+- [x] **Hex Layer**: Integrate GeoJSON rendering into `MapLayer.tsx`.
+- [x] **Selection State**: Update Zustand store to handle `selectedHex`.
+- [x] **Asset Details Component**: Build the "Aero-SciFi" floating panel for hex data.
+- [x] **Interaction**: Connect map clicks to the details panel.

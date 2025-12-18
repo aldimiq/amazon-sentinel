@@ -1,24 +1,43 @@
-# Spec: Hexagon Asset Grid
+# Spec 002: Hexagon Asset Selection & Details
 
-## 1. Overview
-The core interface of Amazon Sentinel is a "Digital Twin" of the Amazon Rainforest, represented as a grid of 1km² hexagons. Each hexagon (Asset) represents a unique piece of land that can be monitored, protected, or purchased.
+## 1. Background
+The core value of Amazon Sentinel is the ability to visualize and invest in specific 1km² plots of the rainforest. This feature implements the interactive hexagonal grid and the detailed "Asset View" for individual plots.
 
 ## 2. User Stories
-- **AS A** Biodiversity Investor, **I WANT TO** view a grid of hexagons over the Amazon rainforest **SO THAT** I can see which areas are available for protection.
-- **AS A** User, **I WANT TO** see different colors for hexagons based on their status (Available, Owned, Alert) **SO THAT** I can quickly identify hotspots or opportunities.
-- **AS A** User, **I WANT TO** click a hexagon **SO THAT** I can see its specific Carbon Stock and Biodiversity Score.
+*   **US-1: Grid Visualization**
+    *   **As a:** User/Investor.
+    *   **I want to:** See a hexagonal grid overlaying the Amazon rainforest.
+    *   **So that:** I can identify specific areas available for investment.
 
-## 3. Acceptance Criteria
-- [ ] Map renders a GeoJSON layer of H3 Hexagons (Resolution 7-8).
-- [ ] Hexagons are colored based on `status`:
-    - `available`: Cyan-500 (60% opacity)
-    - `owned`: Emerald-500 (60% opacity)
-    - `alert`: Red-500 (60% opacity)
-- [ ] Hovering over a hexagon highlights its border (`border-white/50`).
-- [ ] Clicking a hexagon updates the global `selectedHex` state in Zustand.
-- [ ] The grid must performantly render at least 1,000 hexagons within the current viewport.
+*   **US-2: Plot Selection**
+    *   **As a:** User.
+    *   **I want to:** Click on a hexagon.
+    *   **So that:** I can see its specific Biodiversity Score, Carbon Stock, and Price.
 
-## 4. Technical Constraints
-- **H3 Indexing:** Must use Uber's H3 library for grid generation.
-- **PostGIS:** Hexagons must be stored as `POLYGON` types in the `hexes` table.
-- **MapLibre:** Use `GeoJsonLayer` for rendering.
+*   **US-3: Dynamic Pricing**
+    *   **As a:** User.
+    *   **I want to:** See a price that reflects the "Bio-Premium".
+
+## 3. Functional Requirements
+
+### FR-001: Hexagonal Grid (H3)
+*   The system must use **Uber's H3 index** (Resolution 7 or 8) to define the 1km² plots.
+*   The Backend must provide a GeoJSON endpoint for a given bounding box (BBOX).
+
+### FR-002: Asset Details Panel
+*   When a hex is selected, a "Glass-SciFi" panel must appear on the right side.
+*   **Data fields:**
+    *   H3 Index ID.
+    *   Carbon Stock (Tonnes).
+    *   Biodiversity Score (0-100).
+    *   Current Price ($).
+    *   Owner (or 'Available').
+
+### FR-003: Selection State
+*   The selected hex must be highlighted with an emerald glow.
+*   The URL should update with the selected H3 index for link sharing.
+
+## 4. Success Criteria
+*   **SC-001:** Clicking a hexagon highlights it and opens the details panel.
+*   **SC-002:** Details are fetched from the Python Backend (BFF).
+*   **SC-003:** Grid renders smoothly as the user pans/zooms.

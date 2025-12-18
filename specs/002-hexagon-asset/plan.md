@@ -1,42 +1,26 @@
-# Plan: Hexagon Asset Grid
+# Implementation Plan: Hexagon Asset Selection
 
-## 1. Database Schema (Supabase/PostGIS)
-We need to create the `hexes` table as defined in the Sentinel Constitution.
+## 1. Backend (Python/FastAPI)
+*   **H3 Logic**: Use the `h3` library to generate hexagon boundaries.
+*   **Database**: 
+    *   Create a migration for the `hexes` table in Supabase.
+    *   Ensure PostGIS `geom` is generated from H3 indexes.
+*   **Endpoints**:
+    *   `GET /api/v1/explorer/hexes`: Returns GeoJSON of hexes in a BBOX.
+    *   `GET /api/v1/explorer/hexes/{h3_index}`: Returns full metadata for a specific hex.
 
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
+## 2. Frontend (Next.js)
+*   **Map Layer**: Add a `GeoJSON` layer to the Leaflet map.
+*   **Interaction**: Implement `onEachFeature` to handle clicks and trigger the `useStore` selection.
+*   **UI Component**: Create `AssetDetails.tsx` using the "Aero-SciFi" glass style.
 
-CREATE TYPE hex_status AS ENUM ('available', 'owned', 'alert');
+## 3. Data Flow
+1. User clicks map -> Leaflet gets H3 index.
+2. Frontend calls `api.get('/explorer/hexes/{id}')`.
+3. Backend calculates dynamic price based on DB stats.
+4. Frontend displays data in the Glass Panel.
 
-CREATE TABLE hexes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    h3_index TEXT UNIQUE NOT NULL,
-    geom GEOMETRY(POLYGON, 4326) NOT NULL,
-    status hex_status DEFAULT 'available',
-    carbon_stock FLOAT DEFAULT 0.0,
-    bio_score INT CHECK (bio_score >= 0 AND bio_score <= 100),
-    owner_id UUID REFERENCES auth.users(id),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX hexes_geom_idx ON hexes USING GIST (geom);
-CREATE INDEX hexes_h3_idx ON hexes (h3_index);
-```
-
-## 2. Backend Implementation (FastAPI)
-- **Endpoint:** `GET /api/v1/hexes`
-- **Query Params:** `bbox` (string: min_lon, min_lat, max_lon, max_lat)
-- **Logic:**
-    1. Parse Bounding Box.
-    2. Query PostGIS: `ST_Intersects(geom, ST_MakeEnvelope(...))`.
-    3. Return GeoJSON FeatureCollection.
-
-## 3. Frontend Implementation (React + MapLibre)
-- **Store:** Update Zustand to handle `selectedHex`.
-- **Map Component:**
-    - Add a `Source` (type: geojson) pointing to the API.
-    - Add a `Layer` (type: fill) with data-driven styling for colors.
-    - Add a `Layer` (type: line) for the highlight effect on hover.
-
-## 4. Migration Strategy
-Since we are in a workshop environment, we will provide a seed script to generate a cluster of hexagons around a specific coordinate in the Amazon (e.g., near Manaus).
+## 4. Constitution Check
+*   [ ] Uses H3 for indexing?
+*   [ ] Glasskit UI (Apple + Sci-Fi)?
+*   [ ] No direct Supabase calls from FE?
