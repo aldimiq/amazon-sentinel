@@ -1,16 +1,31 @@
 # Tasks: Infrastructure & Docker Setup
 
-## Phase 1: Backend Dockerization
-- [x] **Backend Req**: Create `backend/requirements.txt` with `fastapi`, `uvicorn`, `geopandas`, `shapely`, `asyncpg`, `sqlalchemy`, `geoalchemy2`.
-- [x] **Backend Dockerfile**: Create `backend/Dockerfile` (Python 3.11 slim, install system deps for GeoPandas like `gdal-bin`).
+## Phase 1: Clean Slate
 
-## Phase 2: Frontend Dockerization
-- [x] **Frontend Dockerfile**: Create `frontend/Dockerfile` (Node 20 Alpine).
+- [ ] **Remove Legacy**: Delete `frontend/` (Vite) folder.
 
-## Phase 3: Orchestration
-- [x] **Docker Compose**: Create `docker-compose.yml` defining `db`, `backend`, `frontend`.
-- [x] **Environment**: Create `.env.example` with DB credentials.
+- [ ] **Remove Legacy DB**: Remove old `db` service from `docker-compose.yml`.
 
-## Phase 4: Documentation & Test
-- [x] **Update README**: Add "Running with Docker" section.
-- [x] **Verify**: Run `docker-compose up` and check logs.
+
+
+## Phase 2: Supabase
+
+- [ ] **Setup Supabase**: Clone official repo to `./supabase`.
+
+- [ ] **Configure Env**: Update `.env` with Supabase keys.
+
+
+
+## Phase 3: Frontend (Next.js)
+
+- [ ] **Init Next.js**: Create new `frontend` app (TS, Tailwind, App Router).
+
+- [ ] **Dockerize Frontend**: Create `frontend/Dockerfile`.
+
+
+
+## Phase 4: Orchestration
+
+- [ ] **Update Compose**: Rewrite `docker-compose.yml` to include Backend, Frontend, and Supabase.
+
+- [ ] **Verify**: Run `docker-compose up` and test connections.
