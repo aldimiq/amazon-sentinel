@@ -21,14 +21,11 @@ async def log_requests(request: Request, call_next):
     logger.info(f"REQ: {request.method} {request.url.path} - STATUS: {response.status_code} - {process_time:.2f}ms")
     return response
 
-# CORS Configuration - Fully open for debugging
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS Configuration
+origins = [
+    "http://sentinel-frontend.sentinel-apps.orb.local",
+    "http://localhost:3000",
+]
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "http://kong:8000")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
