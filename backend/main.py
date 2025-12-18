@@ -24,6 +24,9 @@ async def log_requests(request: Request, call_next):
 # CORS Configuration
 origins = [
     "http://frontend.sentinel-apps.orb.local",
+    "https://frontend.sentinel-apps.orb.local",
+    "http://backend.sentinel-apps.orb.local",
+    "https://backend.sentinel-apps.orb.local",
     "http://localhost:3000",
 ]
 
