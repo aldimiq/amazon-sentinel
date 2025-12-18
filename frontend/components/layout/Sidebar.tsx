@@ -36,6 +36,9 @@ export default function Sidebar() {
   if (!mounted) {
     return <aside className="fixed left-0 top-0 z-40 h-screen w-64 glass-panel border-r border-white/20" />;
   }
+
+  return (
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 glass-panel border-r border-white/20">
       <div className="flex h-full flex-col px-4 py-8">
         {/* Brand */}
         <div className="mb-10 flex items-center gap-3 px-3">
