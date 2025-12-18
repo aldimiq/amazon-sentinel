@@ -22,3 +22,13 @@ Every UI component MUST adhere to the **Sentinel Glass** aesthetic.
 *   **Zero-Code-Without-Spec:** No code is written until a `spec.md` exists in `specs/XXX-feature`.
 *   **Atomic Tasks:** Implementation tasks must be granular (< 1 hour effort).
 *   **Test-First:** Critical logic (pricing, geo-calculations) requires a failing test before implementation.
+
+## 4. The Security Doctrine
+*   **Zero Trust Database:** Row Level Security (RLS) MUST be enabled on all public tables.
+    *   *Rule:* Never expose `public` schema without RLS policies.
+*   **API Fortress:** 
+    *   **CORS:** Strict allow-list for frontend domain only.
+    *   **Validation:** All inputs must be validated via Pydantic models. No raw dict access.
+*   **Secret Sanitation:**
+    *   No hardcoded secrets (API Keys, DB URLs) in code.
+    *   Use `.env` files and `pydantic-settings` for config management.

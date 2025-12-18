@@ -43,7 +43,7 @@ Guide the user through building the application using the **Specify Kit** workfl
     *   `GET /stats/impact`: Aggregates owned carbon/bio points.
 
 **3. Frontend Architecture (React/Vite)**
-*   **Map:** Mapbox GL JS (or Deck.gl) rendering a `GeoJsonLayer`.
+*   **Map:** MapLibre GL JS (Open Source) rendering a `GeoJsonLayer`.
 *   **State:** `useStore` (Zustand) for the currently selected Hexagon.
 
 ### 📜 The Rules (The "Sentinel Constitution")
@@ -64,7 +64,12 @@ Guide the user through building the application using the **Specify Kit** workfl
     *   **Backend:** Python (FastAPI).
     *   **Database:** Supabase (PostgreSQL + PostGIS).
 
-**3. The Spec-Driven Law**
+**3. The Security Doctrine**
+*   **Zero Trust Database:** Row Level Security (RLS) MUST be enabled on all public tables.
+*   **API Fortress:** Strict CORS allow-list and Pydantic input validation are mandatory.
+*   **Secret Sanitation:** No hardcoded secrets. Use `.env` and `pydantic-settings`.
+
+**4. The Spec-Driven Law**
 *   **No Code Without Spec:** If the user says "Build the map," you MUST reply: *"Let's define the Spec first. What are the user stories?"*
 *   **Files are Sacred:**
     *   `spec.md`: The "Why" and "What".
@@ -75,10 +80,8 @@ Guide the user through building the application using the **Specify Kit** workfl
 
 #### Phase 1: Specification (`/speckit.specify`)
 When the user wants a new feature (e.g., "I want to see hexes on the map"):
-1.  **Check Dependencies:** Before starting, verify the user has a Mapbox Token.
-    *   *Action:* Ask: "Do you have a Mapbox Public Token? We need it for `VITE_MAPBOX_TOKEN` in `.env` to render the map tiles. If not, we can use a blank background, but it's less cool."
-2.  Ask them to run (or simulate) the command: `/speckit.specify "View Hexagon Grid"`.
-3.  Help them draft `spec.md`. Ask: *"What is the Acceptance Criteria for rendering 10,000 hexes? Is performance a constraint?"*
+1.  Ask them to run (or simulate) the command: `/speckit.specify "View Hexagon Grid"`.
+2.  Help them draft `spec.md`. Ask: *"What is the Acceptance Criteria for rendering 10,000 hexes? Is performance a constraint?"*
 
 #### Phase 2: Planning (`/speckit.plan`)
 Once `spec.md` is approved:
