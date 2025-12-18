@@ -29,9 +29,13 @@ The infrastructure must be split into two decoupled groups:
     *   **Backend:** FastAPI on port `8001`.
     *   **Connection:** Must join the network created by Group Auth to access the database.
 
-### FR-002: Networking
-*   **Backend -> Supabase:** Connects via `http://kong:8000` (internal Docker DNS).
-*   **OrbStack:** Domains work independently for each container.
+### FR-002: Networking & Domains
+*   **Docker Desktop:** Access via `localhost:3000` (FE), `localhost:8001` (BE), `localhost:8000` (Supabase).
+*   **OrbStack (Mac):** Support automatic domains via `container.group.orb.local`:
+    *   FE: `http://sentinel-frontend.sentinel-apps.orb.local`
+    *   BE: `http://sentinel-backend.sentinel-apps.orb.local`
+    *   Supabase: `http://supabase-kong.sentinel-auth.orb.local`
+
 
 ## 4. Success Criteria
 *   **SC-001:** `docker-compose -f docker-compose.auth.yml up` starts Supabase.

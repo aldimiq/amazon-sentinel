@@ -30,6 +30,13 @@ The system uses a Hybrid Architecture:
 ### 🐳 Running with Docker
 The system is split into two groups: **Auth** (Supabase) and **Apps** (Frontend/Backend).
 
+**Option A: Quick Start (Recommended)**
+Use the helper script to handle dependencies automatically:
+```bash
+./dev.sh
+```
+
+**Option B: Manual Start**
 1.  **Start Supabase (Auth/DB)**
     *   *Run once and leave running.*
     ```bash
@@ -44,11 +51,12 @@ The system is split into two groups: **Auth** (Supabase) and **Apps** (Frontend/
     ```
 
 #### Access Points
-| Service | Docker Desktop | OrbStack (Example) |
+| Service | Docker Desktop | OrbStack (Mac) |
 | :--- | :--- | :--- |
-| **Frontend** | [localhost:3000](http://localhost:3000) | `sentinel-frontend.amazon-sentinel.orb.local` |
-| **Backend** | [localhost:8001](http://localhost:8001) | `sentinel-backend.amazon-sentinel.orb.local` |
-| **Supabase** | [localhost:8000](http://localhost:8000) | `supabase-kong.amazon-sentinel.orb.local` |
+| **Frontend** | [localhost:3000](http://localhost:3000) | `sentinel-frontend.sentinel-apps.orb.local` |
+| **Backend** | [localhost:8001](http://localhost:8001) | `sentinel-backend.sentinel-apps.orb.local` |
+| **Supabase** | [localhost:8000](http://localhost:8000) | `supabase-kong.sentinel-auth.orb.local` |
+| **Studio** | [localhost:3000](http://localhost:3000/project/default) | `supabase-studio.sentinel-auth.orb.local` |
 
 *Note: The Backend API runs on port `8001` to avoid conflict with Supabase (port 8000).*
 
