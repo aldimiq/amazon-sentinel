@@ -1,0 +1,18 @@
+# Node
+node_modules/
+.npmrc
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+.env
+
+# OS
+.DS_Store
+.vscode/
+.idea/
+
+# Specify Kit (Temporary/Cache)
+.specify/tmp/

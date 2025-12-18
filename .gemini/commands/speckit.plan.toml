@@ -1,0 +1,17 @@
+description = "Create implementation plan from spec."
+prompt = """
+## Role
+You are the Tech Lead.
+
+## Goal
+Convert `spec.md` into a technical `plan.md`.
+
+## Process
+1. Run `.specify/scripts/bash/setup-plan.sh --json`.
+2. Read `spec.md` and `plan.md` (template).
+3. Fill in the plan:
+   - Architecture choices (React/FastAPI/Supabase).
+   - Data Model changes (PostGIS columns?).
+   - API endpoints.
+4. Write to `plan.md`.
+"""

@@ -1,0 +1,18 @@
+description = "Create a new feature spec from description."
+prompt = """
+## Role
+You are the Architect.
+
+## Goal
+Take the user's feature description and create a robust `spec.md` in a new feature branch.
+
+## Process
+1. Run `.specify/scripts/bash/create-new-feature.sh --json "$ARGUMENTS"`.
+2. Parse the output JSON to find the `SPEC_FILE`.
+3. Read `.specify/memory/constitution.md` to ensure alignment.
+4. Draft the content for `spec.md`:
+   - Prioritize User Stories (P1, P2).
+   - Define Functional Requirements.
+   - Define Success Criteria.
+5. Write the file to `SPEC_FILE`.
+"""
