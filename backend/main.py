@@ -1,6 +1,7 @@
 import os
 import logging
-from fastapi import FastAPI, HTTPException, Body
+import time
+from fastapi import FastAPI, HTTPException, Body, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from supabase import create_client, Client
@@ -11,15 +12,19 @@ logger = logging.getLogger("amazon-sentinel")
 
 app = FastAPI(title="Amazon Sentinel API")
 
-# CORS Configuration
-origins = [
-    "http://frontend.sentinel-apps.orb.local",
-    "http://localhost:3000",
-]
+# Global Request Logging Middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = (time.time() - start_time) * 1000
+    logger.info(f"REQ: {request.method} {request.url.path} - STATUS: {response.status_code} - {process_time:.2f}ms")
+    return response
 
+# CORS Configuration - Fully open for debugging
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,6 +57,7 @@ class ResetPasswordRequest(BaseModel):
 
 @app.post("/auth/signup")
 async def signup(user: UserAuth):
+    logger.info(f"SIGNUP ATTEMPT: {user.email}")
     try:
         res = supabase.auth.sign_up({"email": user.email, "password": user.password})
         if res.session:
@@ -61,13 +67,14 @@ async def signup(user: UserAuth):
                 "access_token": res.session.access_token
             }
         else:
-            return {"message": "Signup successful! Please check your email to verify your account.", "user": res.user}
+            return {"message": "Signup successful! Check email.", "user": res.user}
     except Exception as e:
-        logger.error(f"Signup Failed: {str(e)}")
+        logger.error(f"Signup Failed for {user.email}: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/auth/login")
 async def login(user: UserAuth):
+    logger.info(f"LOGIN ATTEMPT: {user.email}")
     try:
         res = supabase.auth.sign_in_with_password({"email": user.email, "password": user.password})
         return {
@@ -75,7 +82,7 @@ async def login(user: UserAuth):
             "user": res.user
         }
     except Exception as e:
-        logger.error(f"Login Failed: {str(e)}")
+        logger.error(f"Login Failed for {user.email}: {str(e)}")
         raise HTTPException(status_code=401, detail="Invalid email or password.")
 
 @app.get("/")

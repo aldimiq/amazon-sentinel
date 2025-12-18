@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 // Access the environment variable. 
-// Note: In Next.js client-side, this must start with NEXT_PUBLIC_
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+
+console.log("🛠️ NEXT_PUBLIC_API_URL is set to:", process.env.NEXT_PUBLIC_API_URL);
+console.log("📡 Axios Base URL:", API_URL);
 
 export const api = axios.create({
   baseURL: API_URL,
