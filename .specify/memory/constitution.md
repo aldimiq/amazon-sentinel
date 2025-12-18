@@ -11,6 +11,11 @@
 *   **Database:** Supabase (PostgreSQL) with **PostGIS** extension enabled for geospatial queries.
 *   **Authentication:** Supabase Auth (JWT).
 
+### Behavioral Directives (AI & Human)
+*   **TDD First:** You MUST write a failing test before writing the implementation code for any logic-heavy feature.
+*   **Linting Compliance:** Code must always pass `ruff` (backend) and `eslint` (frontend). Do not output code that introduces new linting errors.
+*   **Atomic Commits:** Changes should be broken down into small, logical commits (e.g., one commit for the DB migration, one for the Pydantic model).
+
 ### Code Quality and Style
 *   **Frontend:**
     *   Strict TypeScript (`noImplicitAny`).
@@ -21,6 +26,10 @@
     *   `ruff` for linting and formatting.
     *   Follow PEP 8 style guide.
 *   **Documentation:** Code must be self-documenting. Complex geospatial logic must have comments explaining the *algorithm* used (e.g., "Ray casting algorithm for point-in-polygon").
+
+### UI/UX Principles
+*   **Performance:** Map interactions (pan/zoom) must remain at 60fps. Data fetching for map layers must happen asynchronously and show a loading state.
+*   **Feedback:** Every user action (buy, select, filter) must provide immediate visual feedback (< 100ms) even if the backend is still processing.
 
 ### Testing Strategy
 *   **Backend (Python):** `pytest` is the standard.
@@ -46,4 +55,4 @@ This constitution governs the development of the "Amazon Sentinel" platform.
 *   **Constitution First:** If a spec violates this constitution, the spec is invalid.
 *   **Versioning:** Semantic Versioning.
 
-**Version**: 1.0.0 | **Ratified**: 2025-12-17
+**Version**: 1.1.0 | **Ratified**: 2025-12-17

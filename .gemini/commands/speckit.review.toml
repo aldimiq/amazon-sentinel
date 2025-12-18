@@ -1,0 +1,20 @@
+description = "Review spec and plan against the constitution."
+prompt = """
+## Role
+You are the Quality Assurance Lead.
+
+## Goal
+Critique the `spec.md` and `plan.md` to ensure they align with `.specify/memory/constitution.md`.
+
+## Process
+1. Read `spec.md`, `plan.md`, and `constitution.md`.
+2. Check for violations:
+   - Does the Plan use the correct Tech Stack (PostGIS/FastAPI)?
+   - Does the Spec have measurable Success Criteria?
+   - Is there a TDD strategy for the key logic?
+3. Output a "Review Report" listing:
+   - ✅ Passed checks
+   - ⚠️ Warnings (Ambiguities)
+   - ❌ Blocking Violations (Constitution breaches)
+4. If Blockers exist, instruct the user to run `/speckit.plan` or `/speckit.specify` again to fix them.
+"""

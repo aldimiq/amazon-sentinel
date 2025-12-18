@@ -13,11 +13,15 @@
 ## Phase 3: User Story 1 - [Title] (P1)
 **Goal**: [MVP Goal]
 
-- [ ] T005 [P] [US1] Backend: Implement Service logic in `backend/app/services/`
-- [ ] T006 [P] [US1] Backend: Create API Route in `backend/app/routers/`
-- [ ] T007 [US1] Backend: Unit Tests in `backend/tests/`
-- [ ] T008 [US1] Frontend: Component implementation in `frontend/src/components/`
-- [ ] T009 [US1] Frontend: Integration with API
+### Tests (TDD Mandatory)
+- [ ] T005 [US1] Backend: Write FAILING unit test for Service logic in `backend/tests/test_services.py`
+- [ ] T006 [US1] Backend: Write FAILING integration test for API Route in `backend/tests/test_routes.py`
+
+### Implementation
+- [ ] T007 [P] [US1] Backend: Implement Service logic to pass unit test
+- [ ] T008 [P] [US1] Backend: Implement API Route to pass integration test
+- [ ] T009 [US1] Frontend: Component implementation in `frontend/src/components/`
+- [ ] T010 [US1] Frontend: Integration with API
 
 ## Phase 4: User Story 2 - [Title] (P2)
 ...
