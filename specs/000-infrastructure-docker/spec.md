@@ -16,20 +16,26 @@ To ensure "The Amazon Sentinel" is reproducible and scalable, the entire develop
 
 ## 3. Functional Requirements
 
-### FR-001: Container Services
-The `docker-compose.yml` must define:
-1.  **`supabase`**: Self-hosted Supabase stack (Postgres, GoTrue, PostgREST, Studio).
-    *   Must be initialized from the official `supabase/supabase` repository submodule or clone.
-2.  **`backend`**: Python 3.11+ (FastAPI).
-    *   Must mount `./backend` volume.
-    *   Must connect to Supabase Postgres on port `5432`.
-3.  **`frontend`**: Next.js 14+ (Node 20+).
-    *   Must expose port `3000`.
-    *   Must mount `./frontend` volume for HMR.
+### FR-001: Service Groups
+The infrastructure must be split into two decoupled groups:
+
+1.  **Group: Auth** (`docker-compose.auth.yml`)
+    *   **Content:** The entire Self-Hosted Supabase stack.
+    *   **Network:** Defines an external network `sentinel-network` (or similar) for apps to join.
+    *   **Port:** Kong Gateway on `8000`.
+
+2.  **Group: Apps** (`docker-compose.yml`)
+    *   **Frontend:** Next.js on port `3000`.
+    *   **Backend:** FastAPI on port `8001`.
+    *   **Connection:** Must join the network created by Group Auth to access the database.
 
 ### FR-002: Networking
-*   Frontend talks to Backend via `http://backend:8000`.
-*   Backend talks to Supabase via `db:5432` (or service name defined in Supabase docker).
+*   **Backend -> Supabase:** Connects via `http://kong:8000` (internal Docker DNS).
+*   **OrbStack:** Domains work independently for each container.
+
+## 4. Success Criteria
+*   **SC-001:** `docker-compose -f docker-compose.auth.yml up` starts Supabase.
+*   **SC-002:** `docker-compose up` starts Apps and successfully connects to the running Supabase instance.
 
 ## 4. Success Criteria
 *   **SC-001:** `docker-compose up` starts Next.js, FastAPI, and Supabase.

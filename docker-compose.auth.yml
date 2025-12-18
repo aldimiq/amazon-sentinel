@@ -1,0 +1,5 @@
+name: sentinel-auth
+
+include:
+  - path: supabase/docker/docker-compose.yml
+    env_file: .env

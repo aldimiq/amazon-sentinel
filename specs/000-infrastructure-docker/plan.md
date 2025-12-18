@@ -2,20 +2,15 @@
 
 ## 1. Architecture
 
-### Services
-1.  **`supabase` (Data Layer)**
-    *   Setup: Clone official repo to `./supabase-docker`.
-    *   Execution: Use their `docker-compose.yml` as a base or `include` it.
-2.  **`backend` (FastAPI)**
-    *   Build: `./backend/Dockerfile`.
-    *   Base: `python:3.11-slim`.
-3.  **`frontend` (Next.js)**
-    *   Build: `./frontend/Dockerfile`.
-    *   Base: `node:20-alpine`.
-    *   Command: `npm run dev`.
+### Split Groups
+1.  **Auth Layer** (`docker-compose.auth.yml`)
+    *   Wraps `supabase/docker/docker-compose.yml`.
+    *   Exposes `default` network as `sentinel_net`.
+2.  **App Layer** (`docker-compose.yml`)
+    *   `backend` + `frontend`.
+    *   Uses `external: true` network `sentinel_net`.
 
 ## 3. Implementation Steps
-1.  **Clean Up**: Remove legacy `frontend` (Vite) folder.
-2.  **Supabase Setup**: Clone `supabase/supabase` to `supabase-docker`.
-3.  **Frontend Init**: Run `npx create-next-app@latest frontend` (TypeScript, Tailwind, App Router).
-4.  **Dockerize**: Update `frontend/Dockerfile` and `docker-compose.yml`.
+1.  **Network Setup**: Create `docker-compose.auth.yml` that defines the bridge network.
+2.  **App Setup**: Update `docker-compose.yml` to remove Supabase include and instead join the external network.
+3.  **Docs**: Update README to show the 2-step startup.

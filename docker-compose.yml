@@ -1,8 +1,4 @@
-name: amazon-sentinel
-
-include:
-  - path: supabase/docker/docker-compose.yml
-    env_file: .env
+name: sentinel-apps
 
 services:
   backend:
@@ -10,15 +6,15 @@ services:
     container_name: sentinel-backend
     restart: always
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./backend:/app
     environment:
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - SUPABASE_URL=http://kong:8000
       - SUPABASE_SERVICE_KEY=${SERVICE_ROLE_KEY}
-    depends_on:
-      - db
+    networks:
+      - sentinel-auth_default
 
   frontend:
     build: ./frontend
@@ -30,8 +26,12 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
-      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
       - NEXT_PUBLIC_SUPABASE_ANON_KEY=${ANON_KEY}
-    depends_on:
-      - backend
+    networks:
+      - sentinel-auth_default
+
+networks:
+  sentinel-auth_default:
+    external: true

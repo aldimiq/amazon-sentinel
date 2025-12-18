@@ -22,6 +22,36 @@ The system uses a Hybrid Architecture:
 *   **Map:** Uses free, open-source tiles (OSM/Carto) to ensure accessibility without API keys.
 *   **Security:** Mandatory Row Level Security (RLS) on all PostGIS tables.
 
+## 🚀 Getting Started
+
+### Prerequisites
+*   Docker & Docker Compose (or OrbStack on Mac)
+
+### 🐳 Running with Docker
+The system is split into two groups: **Auth** (Supabase) and **Apps** (Frontend/Backend).
+
+1.  **Start Supabase (Auth/DB)**
+    *   *Run once and leave running.*
+    ```bash
+    cp supabase/docker/.env.example .env
+    docker-compose -f docker-compose.auth.yml up -d
+    ```
+
+2.  **Start Apps (Frontend/Backend)**
+    *   *Run this for daily development.*
+    ```bash
+    docker-compose up
+    ```
+
+#### Access Points
+| Service | Docker Desktop | OrbStack (Example) |
+| :--- | :--- | :--- |
+| **Frontend** | [localhost:3000](http://localhost:3000) | `sentinel-frontend.amazon-sentinel.orb.local` |
+| **Backend** | [localhost:8001](http://localhost:8001) | `sentinel-backend.amazon-sentinel.orb.local` |
+| **Supabase** | [localhost:8000](http://localhost:8000) | `supabase-kong.amazon-sentinel.orb.local` |
+
+*Note: The Backend API runs on port `8001` to avoid conflict with Supabase (port 8000).*
+
 ## 📂 Project Structure
 ```
 amazon-sentinel/
