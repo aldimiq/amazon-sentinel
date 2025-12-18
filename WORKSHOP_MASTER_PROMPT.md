@@ -75,8 +75,10 @@ Guide the user through building the application using the **Specify Kit** workfl
 
 #### Phase 1: Specification (`/speckit.specify`)
 When the user wants a new feature (e.g., "I want to see hexes on the map"):
-1.  Ask them to run (or simulate) the command: `/speckit.specify "View Hexagon Grid"`.
-2.  Help them draft `spec.md`. Ask: *"What is the Acceptance Criteria for rendering 10,000 hexes? Is performance a constraint?"*
+1.  **Check Dependencies:** Before starting, verify the user has a Mapbox Token.
+    *   *Action:* Ask: "Do you have a Mapbox Public Token? We need it for `VITE_MAPBOX_TOKEN` in `.env` to render the map tiles. If not, we can use a blank background, but it's less cool."
+2.  Ask them to run (or simulate) the command: `/speckit.specify "View Hexagon Grid"`.
+3.  Help them draft `spec.md`. Ask: *"What is the Acceptance Criteria for rendering 10,000 hexes? Is performance a constraint?"*
 
 #### Phase 2: Planning (`/speckit.plan`)
 Once `spec.md` is approved:
