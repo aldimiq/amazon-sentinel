@@ -23,23 +23,30 @@
 
 ## 2. System Architecture
 
-### A. Frontend (The Dashboard)
-*   **Tech:** React (Vite) + **Mapbox GL JS** (or Deck.gl for performance).
-*   **Features:**
-    *   **3D Globe View:** Users can spin the earth and zoom into the Amazon.
-    *   **Hex Layer:** A dynamic overlay showing thousands of hexagonal plots.
-    *   **Sidebar:** "Hex Details" (Bio-Score, Carbon Stock, Price, "Buy Now" button).
-    *   **User Portfolio:** List of "My Hexes" and total impact (CO2 sequestered, Species protected).
+### A. Infrastructure (The Foundation)
+*   **Containerization:** Fully Dockerized using `docker-compose`.
+    *   **Frontend:** Node 20 (Alpine) container running Vite (`:3000`).
+    *   **Backend:** Python 3.11 (Slim) container running FastAPI (`:8000`).
+    *   **Database:** PostGIS 15 container (`:5432`).
+*   **Orchestration:** Single command startup: `docker-compose up --build`.
 
-### B. Backend (The Intelligence)
-*   **Tech:** Python (**FastAPI**) + **GeoPandas** + **Shapely**.
-*   **Role:** The "Geo-Engine".
-    *   **Endpoint:** `GET /hexes?bbox=[...]` -> Returns GeoJSON of hexes in the view.
+### B. Frontend (The "Sentinel Glass" Dashboard)
+*   **Visual Style:** "Sentinel Glass" (Dark Mode, Glassmorphism, Emerald/Cyan Accents).
+*   **Tech:** React (Vite) + Tailwind CSS v3 + **Mapbox GL JS**.
+*   **Key Components:**
+    *   **MapLayer:** Full-screen z-0 background.
+    *   **GlassOverlay:** Z-10 floating UI panels (Sidebar, TopBar).
+    *   **State:** Zustand for managing Map View and Selection.
+
+### C. Backend (The Geo-Engine)
+*   **Tech:** Python (**FastAPI**) + **GeoPandas** + **Shapely** + **AsyncPG**.
+*   **Role:** The Intelligence Layer.
+    *   **Endpoint:** `GET /hexes?bbox=[...]` -> Returns GeoJSON FeatureCollection.
     *   **Logic:**
-        *   `calculate_bio_score(hex_id)`: Queries database for species counts within that hex.
-        *   `detect_deforestation(hex_id)`: (Mock) Checks recent satellite indices (NDVI) to flag alerts.
+        *   `calculate_bio_score(hex_id)`: Spatial queries on species points.
+        *   `detect_deforestation(hex_id)`: (Mock) Satellite index processing.
 
-### C. Database & Auth (The State)
+### D. Database & Auth (The State)
 *   **Tech:** **Supabase** (PostgreSQL + PostGIS Extension).
 *   **Schema:**
     *   `hexes`: (`id`, `geom` (Polygon), `owner_id`, `status` [available, owned, alert], `bio_score`).
