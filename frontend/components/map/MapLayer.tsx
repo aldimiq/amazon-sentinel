@@ -7,10 +7,15 @@ import { api } from '@/app/lib/api';
 import AssetDetails from '../ui/AssetDetails';
 import 'leaflet/dist/leaflet.css';
 
-export default function MapLayer() {
+interface MapLayerProps {
+  enableFilters?: boolean;
+}
+
+export default function MapLayer({ enableFilters = false }: MapLayerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
-  const { setSelection } = useExplorerStore();
+  const highlightedLayerRef = useRef<L.Path | null>(null);
+  const { setSelection, filters } = useExplorerStore();
   const [geoData, setGeoData] = useState<any>(null);
 
   // 1. Fetch Data
@@ -19,7 +24,13 @@ export default function MapLayer() {
       .then(res => {
         const features = res.data.map((h: any) => ({
           type: 'Feature',
-          properties: { h3_index: h.h3_index, status: h.status },
+          properties: {
+            h3_index: h.h3_index,
+            status: h.status,
+            carbon_stock: h.carbon_stock || 0, // Ensure properties exist for filtering
+            bio_score: h.bio_score || 0,
+            price: h.price || 0
+          },
           geometry: h.geom
         }));
         setGeoData({ type: 'FeatureCollection', features });
@@ -35,7 +46,7 @@ export default function MapLayer() {
     // Init Map
     const map = L.map(mapRef.current, {
       center: [-3.4653, -62.2159],
-      zoom: 13,
+      zoom: 11,
       zoomControl: false,
       scrollWheelZoom: true,
     });
@@ -45,6 +56,9 @@ export default function MapLayer() {
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; CARTO'
     }).addTo(map);
+
+    // Zoom control (Added here to prevent duplicates)
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     // Cleanup on unmount
     return () => {
@@ -65,13 +79,55 @@ export default function MapLayer() {
       fillOpacity: 0.1,
     });
 
+    const highlightStyle = {
+      color: '#fbbf24', // Amber-400
+      weight: 3,
+      opacity: 1,
+      fillOpacity: 0.4
+    };
+
     const onHexClick = (e: any) => {
-      const h3Index = e.target.feature.properties.h3_index;
+      L.DomEvent.stopPropagation(e);
+      const layer = e.target;
+      const h3Index = layer.feature.properties.h3_index;
+
+      // Reset previous highlight
+      if (highlightedLayerRef.current) {
+        // @ts-ignore
+        const prevLayer = highlightedLayerRef.current;
+        prevLayer.setStyle(hexStyle((prevLayer as any).feature));
+      }
+
+      // Apply highlight
+      layer.setStyle(highlightStyle);
+      layer.bringToFront();
+      highlightedLayerRef.current = layer;
+
       setSelection(h3Index);
+    };
+
+    // Filter Logic
+    const filterFn = (feature: any) => {
+      // Only apply filters if enabled (Page Specific)
+      if (!enableFilters) return true;
+
+      const p = feature.properties;
+      if (!filters) return true;
+
+      const price = Number(p.price) || 0;
+      const bioScore = Number(p.bio_score) || 0;
+      const carbon = Number(p.carbon_stock) || 0;
+
+      return (
+        price <= filters.maxPrice &&
+        bioScore >= filters.minBioScore &&
+        carbon >= filters.minCarbon
+      );
     };
 
     const geoJsonLayer = L.geoJSON(geoData, {
       style: hexStyle,
+      filter: filterFn,
       onEachFeature: (feature, layer) => {
         layer.on({
           click: onHexClick
@@ -79,15 +135,24 @@ export default function MapLayer() {
       }
     }).addTo(mapInstance.current);
 
-    // Zoom control
-    L.control.zoom({ position: 'bottomright' }).addTo(mapInstance.current);
+    const onMapClick = () => {
+      if (highlightedLayerRef.current) {
+        const prevLayer = highlightedLayerRef.current;
+        prevLayer.setStyle(hexStyle((prevLayer as any).feature));
+        highlightedLayerRef.current = null;
+      }
+      setSelection(null);
+    };
+
+    mapInstance.current.on('click', onMapClick);
 
     return () => {
       if (mapInstance.current) {
         mapInstance.current.removeLayer(geoJsonLayer);
+        mapInstance.current.off('click', onMapClick);
       }
     };
-  }, [geoData, setSelection]);
+  }, [geoData, setSelection, filters]);
 
   return (
     <div className="h-full w-full relative group">

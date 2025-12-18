@@ -7,16 +7,22 @@ export default function BioCore() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Prevent duplicate mounting
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
 
     // --- Setup ---
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    
+
     const size = 180;
     renderer.setSize(size, size);
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
 
     // --- Bio-Sphere Geometry ---
     const geometry = new THREE.IcosahedronGeometry(1, 15);
@@ -28,7 +34,7 @@ export default function BioCore() {
       emissive: 0x059669,
       emissiveIntensity: 0.5
     });
-    
+
     const sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
@@ -47,25 +53,28 @@ export default function BioCore() {
     camera.position.z = 2.5;
 
     // --- Animation ---
+    let frameId: number;
     const animate = () => {
-      requestAnimationFrame(animate);
-      
+      frameId = requestAnimationFrame(animate);
+
       sphere.rotation.y += 0.005;
       sphere.rotation.x += 0.002;
-      
+
       // Pulse core
       const scale = 1 + Math.sin(Date.now() * 0.002) * 0.05;
       core.scale.set(scale, scale, scale);
-      
+
       renderer.render(scene, camera);
     };
 
     animate();
 
     return () => {
+      cancelAnimationFrame(frameId);
       renderer.dispose();
-      if (containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
+      // Safe cleanup using captured ref
+      if (container && container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
       }
     };
   }, []);

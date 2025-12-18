@@ -1,20 +1,12 @@
+
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase
+from supabase import create_client, Client
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://sentinel:sentinel@db:5432/sentinel_db")
+# Initialize Supabase client
+url: str = os.environ.get("SUPABASE_URL", "http://kong:8000")
+key: str = os.environ.get("SUPABASE_SERVICE_KEY")
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+if not url or not key:
+    raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_KEY must be set")
 
-AsyncSessionLocal = async_sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
-
-class Base(DeclarativeBase):
-    pass
-
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        yield session
+supabase: Client = create_client(url, key)

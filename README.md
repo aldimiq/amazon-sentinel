@@ -10,8 +10,8 @@
 To incentivize conservation by creating a "Digital Twin" of the Amazon. Users buy 1km² plots ("Hexes"). The price of a Hex is determined by its **Bio-Score** (Biodiversity Richness) + **Carbon Stock**.
 
 ## 🚀 The Stack (Spec-Kit v2)
-*   **Frontend:** Next.js 14 (App Router) + **OpenStreetMap** (Leaflet/MapLibre).
-*   **Backend:** Python (FastAPI) for heavy geo-computation.
+*   **Frontend:** Next.js 14 (App Router) + **OpenStreetMap** (Leaflet) + **Explore Filters**.
+*   **Backend:** Python (FastAPI) for heavy geo-computation & Pricing Engine.
 *   **Auth/DB:** **Self-Hosted Supabase** (Docker).
 *   **Design:** **Sentinel Light** — A modern, minimalist light theme focus.
 

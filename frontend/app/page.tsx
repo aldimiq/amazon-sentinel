@@ -8,7 +8,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import TopBar from '@/components/layout/TopBar';
 
 // Dynamically import map to prevent SSR issues with Leaflet
-const MapLayer = dynamic(() => import('@/components/map/MapLayer'), { 
+const MapLayer = dynamic(() => import('@/components/map/MapLayer'), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full bg-slate-50 flex items-center justify-center">
@@ -24,7 +24,10 @@ export default function RootPage() {
 
   useEffect(() => {
     setIsMounted(true);
+    // Check if user is already in store or try to recover session
+    // For now we rely on the store state. Ideally we should check Supabase session here.
     if (!user) {
+      // TODO: Add real Supabase session check here if store is not persisted
       router.push('/login');
     }
   }, [user, router]);

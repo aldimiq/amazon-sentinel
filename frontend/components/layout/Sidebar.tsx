@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { 
-  LayoutDashboard, 
-  Map as MapIcon, 
-  Leaf, 
-  ShieldAlert, 
+import {
+  LayoutDashboard,
+  Map as MapIcon,
+  Leaf,
+  ShieldAlert,
   Settings,
   LogOut,
   Zap
@@ -17,10 +17,10 @@ import { useRouter } from 'next/navigation';
 import BioCore from '@/components/ui/BioCore';
 
 const navItems = [
-  { name: 'Overview', href: '/', icon: LayoutDashboard },
-  { name: 'Explorer', href: '/explorer', icon: MapIcon },
-  { name: 'Portfolio', href: '/portfolio', icon: Leaf },
-  { name: 'Alerts', href: '/alerts', icon: ShieldAlert },
+  { name: 'Overview', href: '/', icon: LayoutDashboard, disabled: false },
+  { name: 'Explorer', href: '/explorer', icon: MapIcon, disabled: false },
+  { name: 'Portfolio', href: '/portfolio', icon: Leaf, disabled: true },
+  { name: 'Alerts', href: '/alerts', icon: ShieldAlert, disabled: true },
 ];
 
 export default function Sidebar() {
@@ -57,15 +57,25 @@ export default function Sidebar() {
         <nav className="flex-1 space-y-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
+            if (item.disabled) {
+              return (
+                <div
+                  key={item.name}
+                  className="flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-semibold text-slate-300 cursor-not-allowed opacity-60"
+                >
+                  <item.icon size={18} />
+                  {item.name}
+                </div>
+              );
+            }
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
-                  isActive 
-                    ? 'bg-white/60 text-emerald-700 shadow-md border border-white/60' 
-                    : 'text-slate-500 hover:bg-white/30 hover:text-slate-900'
-                }`}
+                className={`flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${isActive
+                  ? 'bg-white/60 text-emerald-700 shadow-md border border-white/60'
+                  : 'text-slate-500 hover:bg-white/30 hover:text-slate-900'
+                  }`}
               >
                 <item.icon size={18} className={isActive ? 'text-emerald-600' : ''} />
                 {item.name}
@@ -76,7 +86,7 @@ export default function Sidebar() {
 
         {/* 3D Core - The Bridge between Glass & Sci-Fi */}
         <div className="my-8 flex justify-center py-4 bg-white/10 rounded-3xl border border-white/10">
-           <BioCore />
+          <BioCore />
         </div>
 
         {/* Footer */}

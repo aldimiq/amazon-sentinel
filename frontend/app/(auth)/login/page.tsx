@@ -10,7 +10,15 @@ import { useEffect } from 'react';
 export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
-  
+
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   useEffect(() => {
     console.log("🛠️ Testing Backend Connectivity...");
     api.get('/')
@@ -64,7 +72,7 @@ export default function LoginPage() {
               {error}
             </div>
           )}
-          
+
           <div className="space-y-4">
             <input
               type="email"
@@ -94,9 +102,9 @@ export default function LoginPage() {
             {loading ? 'Processing...' : 'Sign In'}
           </button>
         </form>
-        
+
         <div className="flex flex-col items-center gap-4">
-          <Link href="/forgot-password" size="sm" className="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest">
+          <Link href="/forgot-password" className="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest">
             Forgot Password?
           </Link>
           <Link href="/signup" className="text-sm font-bold text-emerald-600 hover:text-emerald-500">

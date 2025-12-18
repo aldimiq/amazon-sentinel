@@ -48,6 +48,15 @@ api.interceptors.response.use(
     const url = error.config?.url || 'UNKNOWN URL';
     const status = error.response?.status || 'Network Error';
     console.error(`❌ [API Error] ${status} from ${url}`, error);
+
+    if (status === 401) {
+      console.warn("⚠️ Session expired or invalid. Logging out...");
+      useAuthStore.getState().logout();
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
+    }
+
     return Promise.reject(error);
   }
 );
