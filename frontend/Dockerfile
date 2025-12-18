@@ -2,15 +2,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dependencies
+# Install dependencies based on package-lock.json
 COPY package*.json ./
 RUN npm install
 
-# Copy source
+# Copy source code
 COPY . .
 
-# Expose port
-EXPOSE 5173
+# Expose port 3000
+EXPOSE 3000
 
-# Command to run Vite
-CMD ["npm", "run", "dev", "--", "--host"]
+# Start Next.js in dev mode
+CMD ["npm", "run", "dev"]
