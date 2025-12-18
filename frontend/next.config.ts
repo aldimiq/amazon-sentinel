@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   experimental: {
-    allowedDevOrigins: ["frontend.sentinel-apps.orb.local"],
+    allowedDevOrigins: ["*.orb.local", "frontend.sentinel-apps.orb.local"],
   },
 };
 
