@@ -1,47 +1,58 @@
-# The Amazon Sentinel: Spec-Driven Development Workshop
+# Amazon Sentinel 🛰️🐆
 
-This repository contains all the necessary materials for the "Amazon Sentinel" Spec-Driven Development (SDD) workshop. It's structured as a "Specify Kit" project, designed for AI-assisted development.
+> **"The Wall Street of Biodiversity"**
+> A geospatial platform where investors fund the Amazon Rainforest, one Hexagon at a time.
 
-## Project Overview
+![Status](https://img.shields.io/badge/Status-Prototype-green)
+![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20React%20%7C%20Supabase-blue)
 
-**"The Amazon Sentinel"** is a geospatial investment platform designed to allow investors (both corporate and individual) to fund nature conservation directly by "claiming" virtual hexagons (1km²) of the Amazon rainforest. The platform leverages cutting-edge technology to verify both carbon sequestration and biodiversity uplift within these plots, creating a transparent and impactful way to engage in biodiversity finance.
+## 🌍 The Mission
+To incentivize conservation by creating a "Digital Twin" of the Amazon. Users buy 1km² plots ("Hexes"). The price of a Hex is determined by its **Bio-Score** (Biodiversity Richness) + **Carbon Stock**.
 
-**Key Features:**
+## 🚀 Getting Started
 
-*   **Interactive Map:** A 3D globe visualization of the Amazon, divided into 1km² hexagons.
-*   **Bio-Premium Pricing:** Hexagon prices dynamically adjust based on verified biodiversity (e.g., presence of endangered species).
-*   **Fractionalized Carbon Credits:** Each owned hexagon contributes to a verifiable carbon credit stream.
-*   **MRV (Measurement, Reporting, Verification):** Utilizes satellite data for real-time deforestation alerts and biodiversity monitoring.
-*   **User Portfolios:** Investors can view their owned hexagons and track their environmental impact.
+### Prerequisites
+*   Docker & Docker Compose
 
-## Workshop Materials
+### 🐳 Running with Docker (Recommended)
+This command will spin up the entire stack (Frontend, Backend, Database):
 
-*   **`Spec-Driven_Development_Presentation_and_Workshop.md`**: Contains the full presentation outline on SDD and the general workshop flow.
-*   **`Amazon_Sentinel_System_Documentation.md`**: Detailed system architecture, data models, and specific workshop modules for the "Amazon Sentinel" project.
-*   **`WORKSHOP_MASTER_PROMPT.md`**: **This is the critical document for AI assistance.** It contains detailed instructions and the project's technical blueprint. Copy its content into your AI assistant at the start of the workshop to prime it as your SDD coach.
-*   **`.specify/`**: This directory contains the full "Specify Kit" tooling:
-    *   `constitution.md`: The project's core principles and rules.
-    *   `templates/`: Standardized templates for `spec.md`, `plan.md`, `tasks.md`, and AI agent files.
-    *   `scripts/bash/`: Automation scripts for managing features (e.g., creating new feature branches).
-*   **`.gemini/commands/`**: Configuration files for the AI commands (`/speckit.specify`, `/speckit.plan`, etc.), instructing the AI on how to execute SDD workflows.
-*   **`.github/agents/`**: Agent prompts used by certain AI platforms to guide their behavior in SDD.
+```bash
+cp .env.example .env
+docker-compose up --build
+```
 
-## Technical Stack
+*   **Frontend:** [http://localhost:3000](http://localhost:3000)
+*   **Backend API:** [http://localhost:8000/docs](http://localhost:8000/docs)
+*   **Database:** `localhost:5432` (User/Pass: `sentinel`)
 
-*   **Frontend:** React (Vite), Mapbox GL JS (or Deck.gl)
-*   **Backend:** Python (FastAPI), GeoPandas, Shapely
-*   **Database & Auth:** Supabase (PostgreSQL with PostGIS Extension)
+### 🛠️ Manual Setup (Legacy)
+If you prefer running locally without Docker:
+The frontend is a React SPA with a focus on immersive data visualization ("Glass UI").
 
-## Getting Started (for workshop participants)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+*   **Tech:** React, Vite, TailwindCSS (v3), Mapbox GL JS, Zustand.
+*   **Note:** Create a `.env.local` file with `VITE_MAPBOX_TOKEN=your_token` to see the map.
 
-1.  **Clone this repository.**
-2.  **Prime your AI:** Copy the entire content of `WORKSHOP_MASTER_PROMPT.md` and paste it into your AI assistant.
-3.  **Start a new feature:** Once the AI is primed, you can use the `/speckit.specify` command (or follow the AI's guidance to define your first feature).
+### ⚙️ Backend (The Engine)
+*(Coming Soon)*
+*   **Tech:** Python, FastAPI, GeoPandas, Shapely.
 
-## Contributing
+## 📂 Project Structure
+```
+amazon-sentinel/
+├── frontend/       # React Application (Glassmorphism UI)
+├── backend/        # Python API (Pricing Engine)
+├── specs/          # SDD Artifacts (Specs, Plans, Tasks)
+├── .specify/       # Specify Kit (AI Tools)
+└── WORKSHOP_*.md   # Workshop Materials
+```
 
-This project is intended as a workshop exercise. Contributions are welcome to refine the workshop materials or the starter codebase.
-
-## License
-
-[MIT License or appropriate license]
+## 📜 Documentation
+*   [Spec-Driven Development Workshop](./Spec-Driven_Development_Presentation_and_Workshop.md)
+*   [AI Journal](./AI_JOURNAL.md)
+*   [System Architecture](./Amazon_Sentinel_System_Documentation.md)
