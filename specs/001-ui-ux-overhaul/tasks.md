@@ -11,10 +11,14 @@
 - [x] **Login Page**: Build login form.
 - [x] **Integration**: Connect forms to Python Backend API.
 
-## Phase 3: Dashboard Shell (Sentinel Light)
+## Phase 4: Glasskit UI (Apple Style)
 
-- [x] **Main Layout**: Sidebar + Map Area (Light Theme).
+- [x] **Global CSS**: Define `glass-surface` and `glass-card` tokens with `backdrop-blur-2xl`.
 
-- [x] **Map Integration**: Leaflet/MapLibre with OSM tiles.
+- [x] **Auth Glass**: Apply glass styling to Login/Signup cards.
 
-- [x] **State**: Persist user session in Zustand.
+- [x] **Shell Glass**: Apply high-transparency blur to Sidebar and TopBar.
+
+- [x] **Refined Geometry**: Implement large corner radii (2xl/3xl) for all surfaces.
+
+

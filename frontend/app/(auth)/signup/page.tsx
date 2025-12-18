@@ -22,8 +22,7 @@ export default function SignupPage() {
 
     try {
       await api.post('/auth/signup', { email, password });
-      setSuccess('Account created! Please check your email to verify.');
-      // Optionally redirect after a delay
+      setSuccess('Verification email sent!');
       setTimeout(() => router.push('/login'), 2000);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Signup failed');
@@ -33,66 +32,65 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 shadow-lg rounded-xl border border-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-50 via-slate-50 to-white px-4">
+      <div className="w-full max-w-md space-y-8 glass-surface-heavy p-10 rounded-[2.5rem] border border-white/60">
         <div className="text-center">
+          <div className="mx-auto h-12 w-12 rounded-2xl bg-cyan-600 flex items-center justify-center text-white shadow-xl shadow-cyan-600/20 mb-6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-6 h-6">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+          </div>
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">
             Join Sentinel
           </h2>
-          <p className="mt-2 text-sm text-slate-500">
-            Create your portfolio
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            Start your biodiversity investment journey
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSignup}>
+        <form className="mt-10 space-y-6" onSubmit={handleSignup}>
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded text-sm text-center">
+            <div className="bg-red-50/50 backdrop-blur-md text-red-600 p-4 rounded-2xl text-sm font-medium text-center border border-red-100">
               {error}
             </div>
           )}
           {success && (
-            <div className="bg-emerald-50 text-emerald-600 p-3 rounded text-sm text-center">
+            <div className="bg-emerald-50/50 backdrop-blur-md text-emerald-600 p-4 rounded-2xl text-sm font-medium text-center border border-emerald-100">
               {success}
             </div>
           )}
           
-          <div className="-space-y-px rounded-md shadow-sm">
-            <div>
-              <input
-                type="email"
-                required
-                className="relative block w-full rounded-t-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <input
-                type="password"
-                required
-                className="relative block w-full rounded-b-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 px-3"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          <div className="space-y-4">
+            <input
+              type="email"
+              required
+              className="block w-full rounded-2xl bg-white/50 border-white/40 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-white/60 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm px-4 backdrop-blur-sm transition-all"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              required
+              className="block w-full rounded-2xl bg-white/50 border-white/40 py-3 text-slate-900 shadow-sm ring-1 ring-inset ring-white/60 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm px-4 backdrop-blur-sm transition-all"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative flex w-full justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:opacity-70"
-            >
-              {loading ? 'Creating...' : 'Sign up'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-2xl bg-slate-900 py-3.5 text-sm font-bold text-white shadow-xl hover:bg-slate-800 transition-all active:scale-[0.98] disabled:opacity-50"
+          >
+            {loading ? 'Creating Account...' : 'Get Started'}
+          </button>
         </form>
-
-        <div className="text-center text-sm">
-          <Link href="/login" className="font-medium text-emerald-600 hover:text-emerald-500">
-            Already have an account? Sign in
+        
+        <div className="text-center">
+          <Link href="/login" className="text-sm font-bold text-cyan-600 hover:text-cyan-500">
+            Sign in to existing account
           </Link>
         </div>
       </div>

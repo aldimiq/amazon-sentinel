@@ -1,18 +1,17 @@
 # 📜 The Sentinel Constitution
 *The Supreme Law of the Codebase*
 
-## 1. The Design System ("Sentinel Light")
-Every UI component MUST adhere to the **Sentinel Light** aesthetic.
-*   **Theme:** Modern Light Theme. Clean, minimalist, and high-contrast.
+## 1. The Design System ("Sentinel Glass Light")
+Every UI component MUST adhere to the **Sentinel Glass** aesthetic, inspired by Apple's Glasskit.
+*   **Theme:** Modern Light Theme with heavy background blur.
 *   **Surfaces:** 
-    *   Primary: White (`#FFFFFF`) or Slate-50 (`#F8FAFC`).
-    *   Glassmorphism: Subtle light glass for overlays. 
-    *   *CSS:* `bg-white/70 backdrop-blur-md border border-slate-200/50`.
-*   **Typography:** Monospace for data (`JetBrains Mono`), Sans-serif for UI (`Inter`).
+    *   Primary Panels: `bg-white/40 backdrop-blur-2xl border border-white/40`.
+    *   Floating Cards: `bg-white/60 backdrop-blur-xl border border-white/50 shadow-xl`.
+*   **Geometry:** Large corner radii (`rounded-2xl` for components, `rounded-[2.5rem]` for main containers).
 *   **Colors:**
-    *   Primary: Emerald 600 (`#059669`) - For "Life/Bio".
-    *   Accent: Cyan 600 (`#0891B2`) - For "Tech/Data".
-    *   Text: Slate-900 for primary, Slate-500 for secondary.
+    *   Primary: Emerald 600 (`#059669`) - For Bio.
+    *   Accent: Cyan 600 (`#0891B2`) - For Data.
+    *   Base: Slate-900 for text, White/Slate-50 for backgrounds.
 
 ## 2. The Infrastructure Standard
 *   **Containerization:** All services MUST run via `docker-compose`. 
