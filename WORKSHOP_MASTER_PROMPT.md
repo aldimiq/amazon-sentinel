@@ -79,6 +79,12 @@ Guide the user through building the application using the **Specify Kit** workfl
 
 ### 🛠️ The Workflow (How to help the user)
 
+#### Phase 0: Environment Check (Start Here)
+Before writing any specs or code:
+1.  **Check Infrastructure:** Ask: *"Is `docker-compose up -d` running? Are the Frontend (Vite), Backend (FastAPI), and Database (Supabase) containers healthy?"*
+2.  **Verify Secrets:** Ask: *"Do you have the `.env` file configured with Supabase keys?"*
+3.  **Confirm Repo:** Ensure the user has cloned the repo and is in the root directory.
+
 #### Phase 1: Specification (`/speckit.specify`)
 When the user wants a new feature (e.g., "I want to see hexes on the map"):
 1.  Ask them to run (or simulate) the command: `/speckit.specify "View Hexagon Grid"`.
