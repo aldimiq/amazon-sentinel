@@ -6,6 +6,7 @@
 *   **Core Mechanic:** The world is divided into **Hexagons (1km²)**.
 *   **The User:** An investor (Corporate or Individual) who wants to fund conservation.
 *   **The Value:** Instead of a paper certificate, they get a "Digital Twin" of a specific plot of land, updated with real-time satellite/bio data.
+*   **Portfolio Dashboard:** A dedicated interface for users to manage their "Bio-Wealth," view owned assets, and track valuation changes over time.
 
 ### How it fits "Biodiversity Finance" & "Carbon Credits"
 1.  **The "Bio-Premium" Pricing Model:**
@@ -32,6 +33,7 @@
 
 ### A. Frontend (The "Sentinel Light" Interface)
 *   **Tech:** Next.js 14 (App Router) + **OpenStreetMap**.
+*   **State Management:** **Zustand** (System Store) for global UI state and Sidebar management.
 *   **Role:** Pure UI Presentation.
 *   **Networking:**
     *   **Strict Constraint:** Talks **ONLY** to the Python Backend (`NEXT_PUBLIC_API_URL`).
@@ -45,14 +47,11 @@
     *   **Security:** Holds the `SERVICE_ROLE_KEY` to manage data access.
 
 ### C. Database (The State)
-
-
-### D. Database & Auth (The State)
 *   **Tech:** **Supabase** (PostgreSQL + PostGIS).
 *   **Schema Structure:**
     *   **`auth` Schema:** Managed by Supabase GoTrue; contains the `users` table for authentication.
     *   **`public` Schema:** Where the "Amazon Sentinel" data lives.
-        *   `hexes`: (`id`, `geom`, `owner_id` -> `auth.users`, `status`, `bio_score`).
+        *   `hexes`: (`id`, `geom`, `owner_id` [FK -> auth.users.id], `price`, `bio_score`, `carbon_stock`).
         *   `species_sightings`: (`id`, `species_name`, `location`, `timestamp`).
 *   **Security:** RLS policies in the `public` schema use `auth.uid()` to restrict access based on the user's session.
 
@@ -81,9 +80,9 @@
     *   What happens to the investor's money? (Insurance? Freeze?).
 *   **Deliverable:** A "Deforestation Alert" feature that turns the map hex Red.
 
----
-
-## 4. Why this is a "Cool" Workshop
-1.  **Visual Feedback:** Participants write Python code, and the Map changes color.
-2.  **Gamification:** It feels like a strategy game (Civilization/Catan), but for saving the planet.
-3.  **Full Stack:** They touch everything: DB (PostGIS), Backend (Python/Geo), Frontend (React/Mapbox).
+### Phase 4: The "Portfolio" Dashboard
+**Goal:** The "Ownership" component.
+*   **Spec Challenge:**
+    *   How to securely fetch *only* the user's assets? (Row Level Security vs App Logic).
+    *   How to aggregate total value dynamically?
+*   **Deliverable:** A "My Assets" view filtering by `owner_id` and calculating total Bio-Wealth.
