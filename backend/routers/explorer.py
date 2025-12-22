@@ -1,7 +1,8 @@
 
 from fastapi import APIRouter, HTTPException
-from database import supabase
+from database import supabase, redis_client
 import logging
+import json
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -10,7 +11,26 @@ router = APIRouter(prefix="/explorer", tags=["explorer"])
 @router.get("/hexes")
 async def get_hexes():
     try:
+        # 1. Try Cache
+        try:
+            cached_data = await redis_client.get("all_hexes_geojson")
+            if cached_data:
+                logger.info("⚡ Returning hexes from Redis Cache")
+                return json.loads(cached_data)
+        except Exception as e:
+            logger.error(f"❌ Redis Read Error: {e}")
+
+        # 2. Fetch from DB
         response = supabase.rpc("get_hexes_with_geojson", {}).execute()
+        
+        # 3. Set Cache (Expire in 5 mins)
+        if response.data:
+            try:
+                await redis_client.set("all_hexes_geojson", json.dumps(response.data), ex=300)
+                logger.info("💾 Cached hexes in Redis")
+            except Exception as e:
+                logger.error(f"❌ Redis Write Error: {e}")
+        
         return response.data
     except Exception as e:
         logger.error(f"Failed to fetch hexes: {str(e)}")

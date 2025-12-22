@@ -19,7 +19,7 @@ import BioCore from '@/components/ui/BioCore';
 const navItems = [
   { name: 'Overview', href: '/', icon: LayoutDashboard, disabled: false },
   { name: 'Explorer', href: '/explorer', icon: MapIcon, disabled: false },
-  { name: 'Portfolio', href: '/portfolio', icon: Leaf, disabled: true },
+  { name: 'Portfolio', href: '/portfolio', icon: Leaf, disabled: false },
   { name: 'Alerts', href: '/alerts', icon: ShieldAlert, disabled: true },
 ];
 

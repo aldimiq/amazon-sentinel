@@ -13,10 +13,24 @@ services:
       - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - SUPABASE_URL=http://kong:8000
       - SUPABASE_SERVICE_KEY=${SERVICE_ROLE_KEY}
+      - REDIS_URL=redis://redis:6379/0
     networks:
       - sentinel-auth_default
     labels:
       - "dev.orbstack.domains=backend.sentinel-apps.orb.local"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - sentinel-auth_default
 
   frontend:
     build: ./frontend
@@ -37,3 +51,6 @@ services:
 networks:
   sentinel-auth_default:
     external: true
+
+volumes:
+  redis_data:

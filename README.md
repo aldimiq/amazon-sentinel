@@ -1,76 +1,56 @@
 # Amazon Sentinel 🛰️🐆
 
-> **"The Wall Street of Biodiversity"**
-> A geospatial platform where investors fund the Amazon Rainforest, one Hexagon at a time.
+**Amazon Sentinel** is a geospatial biodiversity finance platform. It creates a "Digital Twin" of the Amazon, dividing it into 1km² Hexagons where investors can fund conservation based on "Bio-Scores" (Biodiversity Metrics).
 
-![Status](https://img.shields.io/badge/Status-Next.js_Transition-orange)
-![Stack](https://img.shields.io/badge/Stack-Next.js_14%20%7C%20Supabase%20%7C%20PostGIS-blue)
+![Amazon Sentinel Banner](https://img.shields.io/badge/Status-Active_Prototype-emerald)
 
-## 🌍 The Mission
-To incentivize conservation by creating a "Digital Twin" of the Amazon. Users buy 1km² plots ("Hexes"). The price of a Hex is determined by its **Bio-Score** (Biodiversity Richness) + **Carbon Stock**.
+## 🚀 Key Features
 
-## 🚀 The Stack (Spec-Kit v2)
-*   **Frontend:** Next.js 14 (App Router) + **OpenStreetMap** (Leaflet) + **Explore Filters**.
-*   **Backend:** Python (FastAPI) for heavy geo-computation & Pricing Engine.
-*   **Auth/DB:** **Self-Hosted Supabase** (Docker).
-*   **Design:** **Sentinel Light** — A modern, minimalist light theme focus.
+*   **Digital Twin Interface:** Interactive 3D/2D map using Mapbox GL JS / Leaflet.
+*   **Bio-Premium Pricing:** Dynamic asset valuation based on biodiversity data.
+*   **Satellite Verification:** Automated deforestation monitoring (Future: Sentinel-2 Integration).
+*   **Redis Caching:** High-performance geo-caching layer for instant map loads.
+*   **Dynamic UI System:** Context-aware interface that adapts to Satellite (Dark/White) or Map (Light/Slate) modes.
 
-## ⚙️ Core Architecture
-The system uses a Hybrid Architecture:
-*   **Next.js:** Handles UI, Auth (Supabase), and basic data fetching.
-*   **Python (FastAPI):** Handles complex biodiversity scoring and carbon calculations.
-*   **Map:** Uses free, open-source tiles (OSM/Carto) to ensure accessibility without API keys.
-*   **Security:** Mandatory Row Level Security (RLS) on all PostGIS tables.
+## 🛠️ Tech Stack
 
-## 🚀 Getting Started
+*   **Frontend:** Next.js 14, Tailwind CSS, Leaflet, Zustand.
+*   **Backend:** Python 3.11, FastAPI, GeoPandas, H3.
+*   **Database:** Supabase (PostgreSQL + PostGIS).
+*   **Cache:** Redis (Async).
+*   **Infrastructure:** Docker Compose.
 
-### Prerequisites
-*   Docker & Docker Compose (or OrbStack on Mac)
+## 📦 Getting Started
 
-### 🐳 Running with Docker
-The system is split into two groups: **Auth** (Supabase) and **Apps** (Frontend/Backend).
-
-**Option A: Quick Start (Recommended)**
-Use the helper script to handle dependencies automatically:
-```bash
-./dev.sh
-```
-
-**Option B: Manual Start**
-1.  **Start Supabase (Auth/DB)**
-    *   *Run once and leave running.*
+1.  **Clone the repository:**
     ```bash
-    cp supabase/docker/.env.example .env
-    docker-compose -f docker-compose.auth.yml up -d
+    git clone https://github.com/your-username/amazon-sentinel.git
+    cd amazon-sentinel
     ```
 
-2.  **Start Apps (Frontend/Backend)**
-    *   *Run this for daily development.*
+2.  **Start the stack:**
     ```bash
-    docker-compose up
+    ./dev.sh
+    # OR
+    docker-compose up --build
     ```
 
-#### Access Points
-| Service | Docker Desktop | OrbStack (Mac) |
-| :--- | :--- | :--- |
-| **Frontend** | [localhost:3000](http://localhost:3000) | `frontend.sentinel-apps.orb.local` |
-| **Backend** | [localhost:8001](http://localhost:8001) | `backend.sentinel-apps.orb.local` |
-| **Supabase** | [localhost:8000](http://localhost:8000) | `kong.sentinel-auth.orb.local` |
-| **Studio** | [localhost:3000](http://localhost:3000/project/default) | `studio.sentinel-auth.orb.local` |
+3.  **Seed the Database:**
+    ```bash
+    # (In a separate terminal)
+    docker exec backend python seed_hexes.py
+    ```
 
-*Note: The Backend API runs on port `8001` to avoid conflict with Supabase (port 8000).*
+4.  **Access the App:**
+    *   Frontend: `http://localhost:3000`
+    *   Backend API: `http://localhost:8001`
+    *   Supabase Studio: `http://localhost:3000` (if running locally)
 
-## 📂 Project Structure
-```
-amazon-sentinel/
-├── frontend/       # React Application (Glassmorphism UI)
-├── backend/        # Python API (Pricing Engine)
-├── specs/          # SDD Artifacts (Specs, Plans, Tasks)
-├── .specify/       # Specify Kit (AI Tools)
-└── WORKSHOP_*.md   # Workshop Materials
-```
+## 🗺️ UI Modes
 
-## 📜 Documentation
-*   [Spec-Driven Development Workshop](./Spec-Driven_Development_Presentation_and_Workshop.md)
-*   [AI Journal](./AI_JOURNAL.md)
-*   [System Architecture](./Amazon_Sentinel_System_Documentation.md)
+*   **Satellite Mode:** Activates a high-contrast "White Glass" theme designed for legibility against dark jungle imagery.
+*   **Map Mode:** Activates a clean "Light Glass" theme for standard vector maps.
+
+## 🤝 Contributing
+
+This project is part of a Spec-Driven Development workshop. Please refer to `specs/` for architectural decisions.

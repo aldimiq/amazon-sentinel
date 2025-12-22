@@ -4,7 +4,7 @@ import time
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from database import supabase
-from routers import auth, explorer
+from routers import auth, explorer, portfolio
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -58,6 +58,7 @@ async def check_supabase_connection():
 # Include Routers
 app.include_router(auth.router)
 app.include_router(explorer.router)
+app.include_router(portfolio.router)
 
 @app.get("/")
 def read_root():

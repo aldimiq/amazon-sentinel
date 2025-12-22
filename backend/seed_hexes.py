@@ -1,5 +1,7 @@
 import os
 import h3
+import random
+import uuid
 from supabase import create_client, Client
 from shapely.geometry import Polygon, mapping
 
@@ -11,6 +13,7 @@ def seed_amazon_hexes():
     print("🛰️ Initializing Satellite Seed...")
     
     # Coordinates for a spot in the Amazon (near Manaus)
+    # Reverted to Amazon Heart as requested
     lat, lng = -3.4653, -62.2159
     
     # Get a ring of hexes at resolution 7 (~5km across)
@@ -31,6 +34,12 @@ def seed_amazon_hexes():
         carbon = round(100 + (hash(h_index) % 50), 2)
         bio = hash(h_index) % 100
         
+        # Randomly assign ownership (20% chance)
+        is_owned = random.random() < 0.2
+        status = "owned" if is_owned else "available"
+        # Use existing dummy user to satisfy Foreign Key
+        owner_id = "00000000-0000-0000-0000-000000000000" if is_owned else None
+        
         # PostGIS WKT format
         wkt_geom = f"POLYGON(({','.join([f'{p[0]} {p[1]}' for p in geojson_poly])}))"
         
@@ -39,7 +48,8 @@ def seed_amazon_hexes():
             "geom": wkt_geom,
             "carbon_stock": carbon,
             "bio_score": bio,
-            "status": "available"
+            "status": status,
+            "owner_id": owner_id
         })
 
     print(f"📦 Prepared {len(data_to_insert)} hexes. Syncing with Supabase...")

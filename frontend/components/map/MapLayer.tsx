@@ -6,6 +6,7 @@ import { useExplorerStore } from '@/app/store/explorer';
 import { api } from '@/app/lib/api';
 import AssetDetails from '../ui/AssetDetails';
 import 'leaflet/dist/leaflet.css';
+import { Locate } from 'lucide-react';
 
 interface MapLayerProps {
   enableFilters?: boolean;
@@ -15,8 +16,10 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const highlightedLayerRef = useRef<L.Path | null>(null);
-  const { setSelection, filters } = useExplorerStore();
+  const { setSelection, filters, setMapMode, mapMode } = useExplorerStore();
   const [geoData, setGeoData] = useState<any>(null);
+  
+  const isSatellite = mapMode === 'satellite';
 
   // 1. Fetch Data
   useEffect(() => {
@@ -52,13 +55,32 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
     });
     mapInstance.current = map;
 
-    // Add Tile Layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    // Base Layers
+    const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; CARTO'
-    }).addTo(map);
+    });
+
+    const esriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri'
+    });
+
+    // Add default layer (User requested Satellite default)
+    esriLayer.addTo(map);
+
+    // Layer Control
+    L.control.layers({
+      "Map View": cartoLayer,
+      "Satellite": esriLayer
+    }, undefined, { position: 'bottomright' }).addTo(map);
 
     // Zoom control (Added here to prevent duplicates)
     L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Listen for layer changes to toggle UI Theme
+    map.on('baselayerchange', (e: any) => {
+      if (e.name === 'Map View') setMapMode('map');
+      if (e.name === 'Satellite') setMapMode('satellite');
+    });
 
     // Cleanup on unmount
     return () => {
@@ -71,18 +93,21 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
   useEffect(() => {
     if (!mapInstance.current || !geoData) return;
 
+    // HUD Style: Thin, crisp lines, subtle glass fill
     const hexStyle = (feature: any) => ({
       fillColor: feature.properties.status === 'available' ? '#10b981' : '#f59e0b',
-      weight: 1,
-      opacity: 0.3,
-      color: 'white',
-      fillOpacity: 0.1,
+      weight: 1.5,
+      opacity: 0.8,
+      color: feature.properties.status === 'available' ? '#34d399' : '#fbbf24', // Brighter stroke
+      fillOpacity: 0.15, // More subtle fill to see satellite
+      className: 'hex-path transition-all duration-300' // Smooth transitions
     });
 
     const highlightStyle = {
-      color: '#fbbf24', // Amber-400
+      color: '#fff', // Pure white highlight
       weight: 3,
       opacity: 1,
+      fillColor: '#fbbf24',
       fillOpacity: 0.4
     };
 
@@ -117,6 +142,11 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       const price = Number(p.price) || 0;
       const bioScore = Number(p.bio_score) || 0;
       const carbon = Number(p.carbon_stock) || 0;
+
+      // Status Check
+      if (filters.status !== 'all' && p.status !== filters.status) {
+        return false;
+      }
 
       return (
         price <= filters.maxPrice &&
@@ -154,6 +184,15 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
     };
   }, [geoData, setSelection, filters]);
 
+  const handleRecenter = () => {
+    if (mapInstance.current) {
+      mapInstance.current.flyTo([-3.4653, -62.2159], 11, {
+        animate: true,
+        duration: 1.5
+      });
+    }
+  };
+
   return (
     <div className="h-full w-full relative group">
       <div className="digital-twin-bg" />
@@ -165,8 +204,19 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       {/* Selected Asset Floating Panel */}
       <AssetDetails />
 
+      {/* Recenter Button */}
+      <button 
+        onClick={handleRecenter}
+        className="absolute bottom-40 right-3 z-[400] bg-white text-slate-900 p-3 rounded-full shadow-xl hover:bg-slate-100 transition-all active:scale-95 border border-slate-200"
+        aria-label="Recenter Map"
+      >
+        <Locate size={20} />
+      </button>
+
       {/* Global Stats HUD */}
-      <div className="absolute bottom-10 left-10 z-[400] glass-card-scifi p-7 rounded-[2rem] w-80 overflow-hidden">
+      <div className={`absolute bottom-10 left-10 z-[400] bg-white/40 backdrop-blur-xl border border-white/40 p-7 rounded-[2rem] w-80 overflow-hidden shadow-xl ${
+        isSatellite ? 'text-white' : 'text-slate-900'
+      }`}>
         <div className="hud-corner hud-tl" />
         <div className="hud-corner hud-tr" />
         <div className="hud-corner hud-bl" />
@@ -174,24 +224,50 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
 
         <div className="flex items-center gap-3 mb-6">
           <div className="h-2 w-2 rounded-full bg-emerald-500 glow-pulse" />
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Neural Interface</h3>
+          <h3 className={`text-[10px] font-black uppercase tracking-[0.3em] ${
+            isSatellite ? 'text-white' : 'text-slate-950'
+          }`}>
+            Neural Interface
+          </h3>
         </div>
 
         <div className="space-y-6">
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Region</span>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${
+              isSatellite ? 'text-white' : 'text-slate-950'
+            }`}>
+              Active Region
+            </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black text-slate-900 tracking-tighter uppercase">Amazon Basin</span>
+              <span className={`text-2xl font-black tracking-tighter uppercase ${
+                isSatellite ? 'text-white' : 'text-black'
+              }`}>
+                Amazon Basin
+              </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/20">
+          <div className={`grid grid-cols-2 gap-4 pt-4 border-t ${
+            isSatellite ? 'border-white/20' : 'border-slate-200'
+          }`}>
             <div>
-              <div className="text-[9px] font-black text-slate-400 uppercase">Latency</div>
-              <div className="text-xs font-bold text-slate-900 font-mono">24ms</div>
+              <div className={`text-[9px] font-black uppercase ${
+                isSatellite ? 'text-white' : 'text-slate-950'
+              }`}>
+                Latency
+              </div>
+              <div className={`text-xs font-bold font-mono ${
+                isSatellite ? 'text-white' : 'text-black'
+              }`}>
+                24ms
+              </div>
             </div>
             <div>
-              <div className="text-[9px] font-black text-slate-400 uppercase">Uplink</div>
+              <div className={`text-[9px] font-black uppercase ${
+                isSatellite ? 'text-white' : 'text-slate-950'
+              }`}>
+                Uplink
+              </div>
               <div className="text-xs font-bold text-emerald-600 font-mono">ACTIVE</div>
             </div>
           </div>
