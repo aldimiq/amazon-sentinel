@@ -38,14 +38,25 @@ async def get_hexes():
 
 @router.get("/hexes/{h3_index}")
 async def get_hex_details(h3_index: str):
+    cache_key = f"hex:{h3_index}"
     try:
-        # Fetch single hex using Supabase client
+        # 1. Try Cache
+        cached_data = await redis_client.get(cache_key)
+        if cached_data:
+            logger.info(f"⚡ Returning hex details from Redis for {h3_index}")
+            return json.loads(cached_data)
+
+        # 2. Fetch single hex using Supabase client
         # We assume the 'hexes' table exists and has 'h3_index' column
         response = supabase.table("hexes").select("*").eq("h3_index", h3_index).execute()
         
         if not response.data:
             raise HTTPException(status_code=404, detail="Hex not found")
             
+        # 3. Cache Data
+        await redis_client.set(cache_key, json.dumps(response.data[0]), ex=300)
+        logger.info(f"💾 Cached hex details for {h3_index}")
+
         return response.data[0]
     except HTTPException as he:
         raise he

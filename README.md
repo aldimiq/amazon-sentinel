@@ -7,6 +7,7 @@
 ## 🚀 Key Features
 
 *   **Digital Twin Interface:** Interactive 3D/2D map using Mapbox GL JS / Leaflet.
+*   **Portfolio Dashboard:** specific View and manage owned conservation assets with real-time valuation.
 *   **Bio-Premium Pricing:** Dynamic asset valuation based on biodiversity data.
 *   **Satellite Verification:** Automated deforestation monitoring (Future: Sentinel-2 Integration).
 *   **Redis Caching:** High-performance geo-caching layer for instant map loads.

@@ -50,7 +50,7 @@ export default function ExplorerFilters() {
                         <div className={`flex p-1 rounded-xl transition-colors ${
                             isSatellite ? 'bg-white/10' : 'bg-slate-100'
                         }`}>
-                            {['all', 'available', 'owned'].map((status) => (
+                            {['all', 'available', 'owned', 'mine'].map((status) => (
                                 <button
                                     key={status}
                                     onClick={() => setFilters({ status: status as any })}

@@ -198,3 +198,19 @@ This document logs the significant interactions and decisions made with the AI (
     *   **Map Stability:** Fixed a "Map container already initialized" crash by implementing a lazy-initialized unique key for the Leaflet container, ensuring compatibility with React Strict Mode.
     *   **Backend:** Added missing `/explorer/hexes` route to serve spatial data, resolving 404 errors.
 *   **Result:** The application now reliably connects in local and OrbStack environments with robust error login.
+
+---
+
+## 2025-12-22 - Portfolio System & Ownership Architecture
+
+**User Prompt:** "analyze any update we make in this project, and update to ai journal, readme, spec documentation, and also push the update to git repository"
+
+**AI Action:**
+*   **Portfolio Core:** Implemented the "My Assets" Dashboard (`frontend/app/portfolio/`), allowing users to view their purchased conservation hexes.
+*   **Data Migration:** Added `migrations/003_add_owner_id_to_rpc.sql` and `apply_migration_003.py` to link Hexagon assets to Supabase User IDs.
+*   **State Management:** Introduced `systemStore` (Zustand) to manage global UI state and sidebar interactions.
+*   **Backend Logic:** Created `backend/routers/portfolio.py` to handle asset fetching and value calculation (`Value = Price * BioScore Multiplier`).
+*   **Seed Data:** Added `seed_user_assets.py` to populate the database with demo portfolio data for testing.
+*   **Documentation:** Created `specs/004-portfolio-dashboard.md`, updated `README.md`, and this journal.
+*   **Git Operations:** Staged and committed all new features.
+*   **Result:** The platform now supports a full "Buy & View" lifecycle for conservation assets.

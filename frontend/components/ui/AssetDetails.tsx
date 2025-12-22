@@ -1,14 +1,18 @@
 'use client';
 
 import { useExplorerStore } from '@/app/store/explorer';
+import { useAuthStore } from '@/app/store/auth';
 import { api } from '@/app/lib/api';
 import { useEffect, useState } from 'react';
-import { X, TrendingUp, Zap, ShieldCheck } from 'lucide-react';
+import { X, TrendingUp, Zap, ShieldCheck, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function AssetDetails() {
   const { selectedHex, details, setSelection, setDetails, mapMode } = useExplorerStore();
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const isSatellite = mapMode === 'satellite';
+  const router = useRouter();
 
   useEffect(() => {
     if (selectedHex) {
@@ -21,6 +25,11 @@ export default function AssetDetails() {
   }, [selectedHex, setDetails]);
 
   if (!selectedHex) return null;
+
+  // Derived State
+  const isMine = user?.id && details?.owner_id === user.id;
+  const isAvailable = details?.status === 'available';
+  const isOwnedByOther = details?.status === 'owned' && !isMine;
 
   return (
     <div className="absolute right-8 top-24 z-[400] w-80 bg-white/40 backdrop-blur-xl border border-white/40 p-0 rounded-[2.5rem] overflow-hidden shadow-xl text-slate-900">
@@ -104,25 +113,43 @@ export default function AssetDetails() {
             </div>
 
             {/* Status */}
-            <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border bg-slate-50/80 border-slate-200">
-              <ShieldCheck size={20} className="text-emerald-600" />
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-2xl border ${
+              isMine ? 'bg-cyan-50/80 border-cyan-200' : 'bg-slate-50/80 border-slate-200'
+            }`}>
+              {isMine ? (
+                <User size={20} className="text-cyan-600" />
+              ) : (
+                <ShieldCheck size={20} className={isAvailable ? "text-emerald-600" : "text-amber-500"} />
+              )}
+              
               <div className="flex-1">
                 <div className="text-[10px] font-bold text-slate-900 uppercase leading-none">Status</div>
-                <div className="text-xs font-bold text-slate-900 uppercase mt-0.5">{details.status}</div>
+                <div className={`text-xs font-bold uppercase mt-0.5 ${
+                  isMine ? 'text-cyan-700' : 'text-slate-900'
+                }`}>
+                  {isMine ? 'Your Asset' : (isAvailable ? 'Available' : 'Unavailable')}
+                </div>
               </div>
             </div>
 
             {/* Action */}
-            {details.status === 'owned' ? (
+            {isMine ? (
+              <button 
+                onClick={() => router.push('/portfolio')}
+                className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-[0.98] bg-cyan-500 text-white hover:bg-cyan-600"
+              >
+                Manage Asset
+              </button>
+            ) : isAvailable ? (
+              <button className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-[0.98] bg-slate-900 text-white hover:bg-emerald-700">
+                Initiate Purchase
+              </button>
+            ) : (
               <button 
                 disabled 
                 className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-none cursor-not-allowed bg-slate-200 text-slate-400"
               >
-                Asset Acquired
-              </button>
-            ) : (
-              <button className="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all active:scale-[0.98] bg-slate-900 text-white hover:bg-emerald-700">
-                Initiate Purchase
+                Sold
               </button>
             )}
           </>

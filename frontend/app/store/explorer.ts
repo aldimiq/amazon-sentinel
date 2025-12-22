@@ -13,7 +13,7 @@ interface Filters {
   maxPrice: number;
   minBioScore: number;
   minCarbon: number;
-  status: 'all' | 'available' | 'owned';
+  status: 'all' | 'available' | 'owned' | 'mine';
 }
 
 interface ExplorerState {

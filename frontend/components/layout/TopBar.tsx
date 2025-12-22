@@ -1,16 +1,62 @@
 'use client';
 
-import { Search, User, Bell, Cpu } from 'lucide-react';
+import { Search, User, Bell, Cpu, Activity, AlertTriangle, WifiOff } from 'lucide-react';
 import { useAuthStore } from '@/app/store/auth';
+import { useSystemStore } from '@/app/store/systemStore';
 import { useEffect, useState } from 'react';
+import { api } from '@/app/lib/api';
 
 export default function TopBar() {
   const user = useAuthStore((state) => state.user);
+  const { status, latency, setStatus, setLatency } = useSystemStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    const checkHealth = async () => {
+      const start = Date.now();
+      try {
+        await api.get('/');
+        const end = Date.now();
+        const lat = end - start;
+        setLatency(lat);
+        
+        if (lat > 800) {
+          setStatus('degraded');
+        } else {
+          setStatus('nominal');
+        }
+      } catch (err) {
+        console.error('System Health Check Failed:', err);
+        setStatus('offline');
+        setLatency(0);
+      }
+    };
+
+    // Initial check
+    checkHealth();
+
+    // Poll every 30s
+    const interval = setInterval(checkHealth, 30000);
+    return () => clearInterval(interval);
+  }, [setStatus, setLatency]);
+
+  const getStatusColor = () => {
+    switch (status) {
+      case 'nominal': return 'text-emerald-600 bg-emerald-500/5 border-emerald-500/10';
+      case 'degraded': return 'text-amber-500 bg-amber-500/5 border-amber-500/10';
+      case 'offline': return 'text-rose-600 bg-rose-500/5 border-rose-500/10';
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'nominal': return <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />;
+      case 'degraded': return <AlertTriangle size={10} className="text-amber-500" />;
+      case 'offline': return <WifiOff size={10} className="text-rose-500" />;
+    }
+  };
 
   return (
     <header className="fixed top-0 right-0 z-30 h-16 left-64 glass-panel border-b border-white/20 flex items-center justify-between px-10">
@@ -26,9 +72,18 @@ export default function TopBar() {
 
       {/* Identity & System Status */}
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/5 border border-emerald-500/10">
-           <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-           <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter">System Nominal</span>
+        
+        {/* Live System Monitor */}
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors ${getStatusColor()}`}>
+           {getStatusIcon()}
+           <div className="flex flex-col leading-none">
+             <span className="text-[9px] font-bold uppercase tracking-tighter">
+               {status === 'nominal' ? 'System Nominal' : status === 'degraded' ? 'Latency Warning' : 'System Offline'}
+             </span>
+             {status !== 'offline' && (
+                <span className="text-[8px] font-mono opacity-60 mt-0.5">{latency}ms</span>
+             )}
+           </div>
         </div>
 
         <button className="relative p-2 text-slate-400 hover:text-emerald-600 transition-colors">

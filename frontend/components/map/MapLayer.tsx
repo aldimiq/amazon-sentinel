@@ -3,7 +3,10 @@
 import { useEffect, useState, useRef } from 'react';
 import L from 'leaflet';
 import { useExplorerStore } from '@/app/store/explorer';
+import { useAuthStore } from '@/app/store/auth';
+import { useSystemStore } from '@/app/store/systemStore';
 import { api } from '@/app/lib/api';
+import { useSearchParams } from 'next/navigation';
 import AssetDetails from '../ui/AssetDetails';
 import 'leaflet/dist/leaflet.css';
 import { Locate } from 'lucide-react';
@@ -16,7 +19,12 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const highlightedLayerRef = useRef<L.Path | null>(null);
+  
   const { setSelection, filters, setMapMode, mapMode } = useExplorerStore();
+  const { user } = useAuthStore();
+  const { latency, status } = useSystemStore();
+  const searchParams = useSearchParams();
+  
   const [geoData, setGeoData] = useState<any>(null);
   
   const isSatellite = mapMode === 'satellite';
@@ -30,7 +38,8 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
           properties: {
             h3_index: h.h3_index,
             status: h.status,
-            carbon_stock: h.carbon_stock || 0, // Ensure properties exist for filtering
+            owner_id: h.owner_id, // Ensure owner_id is passed
+            carbon_stock: h.carbon_stock || 0,
             bio_score: h.bio_score || 0,
             price: h.price || 0
           },
@@ -41,12 +50,11 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       .catch(err => console.error('Map Load Error:', err));
   }, []);
 
-  // 2. Initialize Map Manually (Robust Fix)
+  // 2. Initialize Map
   useEffect(() => {
     if (!mapRef.current) return;
-    if (mapInstance.current) return; // Prevent double init
+    if (mapInstance.current) return;
 
-    // Init Map
     const map = L.map(mapRef.current, {
       center: [-3.4653, -62.2159],
       zoom: 11,
@@ -55,7 +63,6 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
     });
     mapInstance.current = map;
 
-    // Base Layers
     const cartoLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; CARTO'
     });
@@ -64,47 +71,95 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       attribution: 'Tiles &copy; Esri'
     });
 
-    // Add default layer (User requested Satellite default)
     esriLayer.addTo(map);
 
-    // Layer Control
     L.control.layers({
       "Map View": cartoLayer,
       "Satellite": esriLayer
     }, undefined, { position: 'bottomright' }).addTo(map);
 
-    // Zoom control (Added here to prevent duplicates)
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Listen for layer changes to toggle UI Theme
     map.on('baselayerchange', (e: any) => {
       if (e.name === 'Map View') setMapMode('map');
       if (e.name === 'Satellite') setMapMode('satellite');
     });
 
-    // Cleanup on unmount
     return () => {
       map.remove();
       mapInstance.current = null;
     };
   }, []);
 
-  // 3. Update GeoJSON Layer when data changes
+  // 3. Handle Deep Linking (URL Query)
+  useEffect(() => {
+    if (!geoData || !mapInstance.current) return;
+
+    const targetH3 = searchParams.get('h3');
+    if (targetH3) {
+      // Find feature
+      const feature = geoData.features.find((f: any) => f.properties.h3_index === targetH3);
+      if (feature) {
+        // Create a temporary layer to get bounds
+        const layer = L.geoJSON(feature);
+        const bounds = layer.getBounds();
+        
+        // Fly to bounds
+        mapInstance.current.flyToBounds(bounds, {
+          padding: [50, 50],
+          maxZoom: 13,
+          animate: true,
+          duration: 1.5
+        });
+
+        // Select it (Note: This doesn't highlight it visually via the click handler logic, 
+        // we rely on setSelection to open the panel, but visual highlight needs reference to the layer.
+        // For now, we just open the panel.)
+        setSelection(targetH3);
+      }
+    }
+  }, [geoData, searchParams]);
+
+
+  // 4. Update GeoJSON Layer
   useEffect(() => {
     if (!mapInstance.current || !geoData) return;
 
-    // HUD Style: Thin, crisp lines, subtle glass fill
-    const hexStyle = (feature: any) => ({
-      fillColor: feature.properties.status === 'available' ? '#10b981' : '#f59e0b',
-      weight: 1.5,
-      opacity: 0.8,
-      color: feature.properties.status === 'available' ? '#34d399' : '#fbbf24', // Brighter stroke
-      fillOpacity: 0.15, // More subtle fill to see satellite
-      className: 'hex-path transition-all duration-300' // Smooth transitions
-    });
+    // Remove old layers if any (simple approach for now, usually we keep track of layer group)
+    // For this prototype, we're assuming this effect runs when geoData changes (once).
+    // Note: React 18 strict mode might cause double init, but mapInstance check handles it.
+    // However, L.geoJSON needs to be managed if geoData updates.
+    // Let's use a clear function if we were updating data frequently.
+    
+    // Custom Style Logic
+    const hexStyle = (feature: any) => {
+      const isMyAsset = user?.id && feature.properties.owner_id === user.id;
+      
+      let fillColor = '#10b981'; // Available (Green)
+      let color = '#34d399';
+      
+      if (feature.properties.status !== 'available') {
+        if (isMyAsset) {
+          fillColor = '#06b6d4'; // Mine (Cyan)
+          color = '#22d3ee';
+        } else {
+          fillColor = '#f59e0b'; // Others (Orange)
+          color = '#fbbf24';
+        }
+      }
+
+      return {
+        fillColor,
+        weight: 1.5,
+        opacity: 0.8,
+        color,
+        fillOpacity: isMyAsset ? 0.3 : 0.15, // Make mine slightly more visible
+        className: 'hex-path transition-all duration-300'
+      };
+    };
 
     const highlightStyle = {
-      color: '#fff', // Pure white highlight
+      color: '#fff',
       weight: 3,
       opacity: 1,
       fillColor: '#fbbf24',
@@ -116,14 +171,12 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       const layer = e.target;
       const h3Index = layer.feature.properties.h3_index;
 
-      // Reset previous highlight
       if (highlightedLayerRef.current) {
         // @ts-ignore
         const prevLayer = highlightedLayerRef.current;
         prevLayer.setStyle(hexStyle((prevLayer as any).feature));
       }
 
-      // Apply highlight
       layer.setStyle(highlightStyle);
       layer.bringToFront();
       highlightedLayerRef.current = layer;
@@ -144,8 +197,13 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       const carbon = Number(p.carbon_stock) || 0;
 
       // Status Check
-      if (filters.status !== 'all' && p.status !== filters.status) {
-        return false;
+      if (filters.status !== 'all') {
+        if (filters.status === 'mine') {
+           // 'mine' is a derived check, not a direct status in DB usually
+           if (!user || p.owner_id !== user.id) return false;
+        } else if (p.status !== filters.status) {
+           return false;
+        }
       }
 
       return (
@@ -155,13 +213,18 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
       );
     };
 
+    // Clear previous layers to avoid duplicates on re-render
+    mapInstance.current.eachLayer((layer) => {
+       if (layer instanceof L.GeoJSON) {
+         mapInstance.current?.removeLayer(layer);
+       }
+    });
+
     const geoJsonLayer = L.geoJSON(geoData, {
       style: hexStyle,
       filter: filterFn,
       onEachFeature: (feature, layer) => {
-        layer.on({
-          click: onHexClick
-        });
+        layer.on({ click: onHexClick });
       }
     }).addTo(mapInstance.current);
 
@@ -182,7 +245,7 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
         mapInstance.current.off('click', onMapClick);
       }
     };
-  }, [geoData, setSelection, filters]);
+  }, [geoData, setSelection, filters, user]); // Added user to dependency to re-render styles on login
 
   const handleRecenter = () => {
     if (mapInstance.current) {
@@ -259,7 +322,7 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
               <div className={`text-xs font-bold font-mono ${
                 isSatellite ? 'text-white' : 'text-black'
               }`}>
-                24ms
+                {status === 'offline' ? '--' : `${latency}ms`}
               </div>
             </div>
             <div>
@@ -268,7 +331,12 @@ export default function MapLayer({ enableFilters = false }: MapLayerProps) {
               }`}>
                 Uplink
               </div>
-              <div className="text-xs font-bold text-emerald-600 font-mono">ACTIVE</div>
+              <div className={`text-xs font-bold font-mono ${
+                status === 'nominal' ? 'text-emerald-600' :
+                status === 'degraded' ? 'text-amber-500' : 'text-rose-500'
+              }`}>
+                {status === 'offline' ? 'DOWN' : 'ACTIVE'}
+              </div>
             </div>
           </div>
         </div>
